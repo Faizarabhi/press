@@ -15,10 +15,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
-    /* Route::get('/posts', [PostController::class, 'adminPosts']); */
+
     });
 
 Route::middleware(['auth:api', 'role:reporter'])->group(function () {
-        /* Route::post('/post', [PostController::class, 'store']);
-      Route::get('/posts', [PostController::class, 'reporterPosts']); */
+
     });
