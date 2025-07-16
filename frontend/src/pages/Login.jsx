@@ -1,50 +1,57 @@
-import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
 import { login } from '../features/auth/authSlice'
-
-
+import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
   const dispatch = useDispatch()
-  const { loading, error } = useSelector((state) => state.auth)
+  const navigate = useNavigate()
+  const { token, error } = useSelector((state) => state.auth)
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  })
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    dispatch(login({ email, password }))
+    dispatch(login(formData))
+    
   }
 
+  useEffect(() => {
+    if (token) {
+      navigate('/dashboard/posts')
+    }
+  }, [token, navigate])
+
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h2 className="text-2xl mb-4">Login</h2>
-      {error && <p className="text-red-600 mb-2">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Email</label>
+    <div className="max-w-md mx-auto mt-20">
+      <h1 className="text-2xl font-bold mb-4">Connexion</h1>
+      {error && <p className="text-red-500">{error.message || 'Erreur de connexion'}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
-          className="w-full border px-3 py-2 mb-4"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
         />
-
-        <label>Password</label>
         <input
           type="password"
-          className="w-full border px-3 py-2 mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          name="password"
+          placeholder="Mot de passe"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
         />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded"
-          disabled={loading}
-        >
-          {loading ? 'Loading...' : 'Login'}
+        <button type="submit" className="w-full bg-indigo-600 text-white p-2 rounded">
+          Se connecter
         </button>
       </form>
     </div>

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Article({ post }) {
   return (
     <article className="flex max-w-xl flex-col items-start justify-between border p-4 rounded-lg">
@@ -29,8 +31,9 @@ export default function Article({ post }) {
         <p className="mt-5 line-clamp-3 text-sm text-gray-600">{post.content}</p>
       </div>
 
-      <div className="relative mt-8 flex items-center gap-x-4 justify-self-end">
-        <img
+      <div className="relative mt-8 flex items-center gap-x-4 justify-between min-w-full">
+        
+        <div className="flex items-center gap-x-4"><img
           alt=""
           src={
             post.author.imageUrl ||
@@ -40,8 +43,15 @@ export default function Article({ post }) {
         />
         <div className="text-sm">
           <p className="font-semibold text-gray-900">{post.author.name}</p>
-          <p className="text-gray-600">{post.author.role}</p>
+          </div>
         </div>
+        <p className="text-gray-500">{post.status}</p>
+            <Link
+              to={`/dashboard/posts/${post.id}`}
+              className="text-indigo-600 hover:underline mt-2 inline-block"
+            >
+              Voir les détails →
+            </Link>
       </div>
     </article>
   );
