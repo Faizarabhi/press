@@ -166,7 +166,7 @@ export default function Public() {
                 ) : (
                     <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
                         {posts.map((post) => (
-                            <Article key={post.id} post={post} />
+                            <Article key={post.id} post={post}  link={`post-review/${post.id}`}/>
                         ))}
                     </div>
                 )}</section>

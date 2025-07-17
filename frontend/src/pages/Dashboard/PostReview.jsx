@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { fetchPostById, deletePost } from '../../features/posts/postsSlice'
+import { fetchPostById, deletePost } from '../../store/posts/postsSlice'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 export default function ReviewPost() {
@@ -23,7 +23,7 @@ const onEdit = () => {
 const onDelete = async () => {
   if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
     try {
-      await dispatch(deletePost(id)).unwrap()
+     /*  await dispatch(deletePost(id)).unwrap() */
       navigate('/dashboard/posts') // retour à la liste après suppression
     } catch (err) {
       alert("Erreur lors de la suppression : " + (err?.message || ''))

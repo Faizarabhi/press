@@ -7,38 +7,71 @@ import Posts from '../pages/Dashboard/Posts'
 import PostReview from '../pages/Dashboard/PostReview'
 import PostEdit from '../pages/Dashboard/PostEdit'
 import NotFound from '../pages/NotFound'
-
-function isAuthenticated() {
-  return !!localStorage.getItem('token')
-}
+import ReadPost from '../pages/ReadPost'
+import { ProtectedRoute } from '../routes/ProtectedRoute.js'
+import PostCreate from '../pages/Dashboard/PostCreate.jsx'
 
 const router = createBrowserRouter([
+  {
+    path: '/post',
+    element: <ReadPost />,
+  },
   {
     path: '/',
     element: <Public />,
   },
   {
+    path: '/post-review/:id',
+    element: <ReadPost />,
+  },
+  {
     path: '/login',
-    element: isAuthenticated() ? <Navigate to="/" replace /> : <Login />,
+    element: <Login />,
   },
   {
     path: '/register',
-    element: isAuthenticated() ? <Navigate to="/" replace /> : <Register />,
+    element: <Register />,
   },
   {
     path: '/dashboard',
-    element: isAuthenticated() ? <DashboardLayout /> : <Navigate to="/login" replace />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: 'posts',
-        element: <Posts />,
+        element: (
+          <ProtectedRoute>
+            <Posts />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'posts/:id',
-        element: <PostReview />,
-      },{
-        path: '/dashboard/posts/:id/edit',
-        element: <PostEdit />,
+        element: (
+          <ProtectedRoute>
+            <PostReview />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'posts/:id/edit',
+        element: (
+          <ProtectedRoute >
+            {/* requiredRole="editor"  */}
+            <PostEdit />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'posts/create',
+        element: (
+          <ProtectedRoute >
+            <PostCreate />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

@@ -18,18 +18,31 @@ Route::get('/posts/validated', [PostController::class, 'validated']);
 Route::middleware(['auth.jwt', 'role:reporter'])->group(function () {
     Route::post('/posts', [PostController::class, 'store']);
     Route::put('/posts/{post}/edit-content', [PostController::class, 'updateContent']);
-    Route::get('/posts', [PostController::class, 'index']); // uniquement ses propres posts
+
+    Route::get('/posts-reporter', [PostController::class, 'index']);
+});
+ Route::middleware(['auth.jwt'])->get('/me', function () {
+    return response()->json([
+        'user' => auth()->user(),
+        'role' => auth()->user()->role,
+    ]);
 });
 
 // 🧑‍🏫 Editor only
 Route::middleware(['auth.jwt', 'role:editor'])->group(function () {
-    Route::get('/categories', [CategoryController::class, 'index']);
     Route::put('/posts/{post}/update-status', [PostController::class, 'updateStatus']);
-    Route::get('/posts', [PostController::class, 'index']); 
+    Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/categories/{id}', [CategoryController::class, 'show']);
+    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::put('/categories/{id}', [CategoryController::class, 'update']);
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 });
 
 // 🔁 Reporter + Editor
 Route::middleware(['auth.jwt', 'role:reporter,editor'])->group(function () {
     Route::get('/posts/{post}', [PostController::class, 'show']);
     Route::get('/', [PostController::class, 'dashboard']);
+    Route::get('/categories', [CategoryController::class, 'index']);
+
+
 });

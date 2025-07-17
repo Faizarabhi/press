@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { fetchPostById, deletePost } from '../../features/posts/postsSlice'
+import { fetchPostById, deletePost } from '../../store/posts/postsSlice'
 import { CheckIcon } from '@heroicons/react/24/outline'
 import TextArea from '../../components/TextArea'
 import Select from '../../components/Select'

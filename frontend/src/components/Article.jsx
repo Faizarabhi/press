@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
-export default function Article({ post }) {
+export default function Article({ post,link }) {
   return (
-    <article className="flex max-w-xl flex-col items-start justify-between border p-4 rounded-lg">
+    <article className="flex max-w-xl flex-col items-start justify-between border p-4 rounded-lg" >
       {post.image && (
         <img
         //  src='{post.image}'
@@ -47,7 +47,7 @@ export default function Article({ post }) {
         </div>
         <p className="text-gray-500">{post.status}</p>
             <Link
-              to={`/dashboard/posts/${post.id}`}
+              to={ link}
               className="text-indigo-600 hover:underline mt-2 inline-block"
             >
               Voir les détails →
