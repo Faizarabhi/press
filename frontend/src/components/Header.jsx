@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../store/auth/authSlice' // adapte le path
 
 function Header() {
-  const categories = [/* ... ta liste ... */]
+  const categories = []
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const dispatch = useDispatch()
@@ -13,7 +13,6 @@ function Header() {
 
   const handleLogout = () => {
     dispatch(logout())
-    // Optionnel : rediriger après logout
     window.location.href = '/'
   }
 

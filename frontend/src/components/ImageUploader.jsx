@@ -1,12 +1,12 @@
-export default function ImageUploader({ image, onChange }) {
+export default function ImageUploader({ image, onChange , edit}) {
   return (
     <div className="flex items-center justify-center w-full h-64 object-cover">
       <label
         htmlFor="dropzone-file"
-        className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 border-gray-300 ${image ? 'relative overflow-hidden group' : ''
+        className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50/15 hover:bg-gray-100/15  ${image ? 'relative overflow-hidden group' : ''
           }`}
       >
-        {image ? (
+        {image && !edit ? (
           <div className="w-full h-full ">
             <img
               src={image}

@@ -1,9 +1,8 @@
 import Article from "../components/Article";
-import { Dialog, DialogPanel } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react"
 import { fetchValidatedPosts } from "../api/postApi"
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function Public() {
     const [posts, setPosts] = useState([])
@@ -25,14 +24,12 @@ export default function Public() {
         loadPosts()
     }, [])
 
-   
+
 
     return (
         <div className="bg-white min-h-screen">
-            {/* Header */}
-           <Header />
 
-            {/* Hero Banner */}
+            <Header />
             <main className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-32">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
@@ -83,11 +80,11 @@ export default function Public() {
                 ) : (
                     <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
                         {posts.map((post) => (
-                            <Article key={post.id} post={post}  link={`post-review/${post.id}`}/>
+                            <Article key={post.id} post={post} link={`post-review/${post.id}`} />
                         ))}
                     </div>
                 )}</section>
-
+            <Footer />
         </div>
     );
 }

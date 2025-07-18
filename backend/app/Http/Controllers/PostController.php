@@ -31,43 +31,43 @@ class PostController extends Controller
         }
     }
 
-   public function updateContent(Request $request, Post $post)
-{
-    try {
-        if ($post->user_id !== auth()->id()) {
-            return response()->json(['message' => 'Not authorized.'], 403);
-        }
-
-        if ($request->has('image')) {
-            $image = $request->input('image');
-            if ($image === 'undefined' || $image === '' || $image === null) {
-                $request->request->remove('image');
+    public function updateContent(Request $request, Post $post)
+    {
+        try {
+            if ($post->user_id !== auth()->id()) {
+                return response()->json(['message' => 'Not authorized.'], 403);
             }
-        }
 
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'sometimes|in:Draft,Pending,Approved,Rejected',
-            'categorie_id' => 'sometimes|exists:categories,id',
-            'content' => 'sometimes|required|string',
-        ]);
-
-        if ($request->hasFile('image')) {
-            if ($post->image) {
-                \Storage::disk('public')->delete($post->image);
+            if ($request->has('image')) {
+                $image = $request->input('image');
+                if ($image === 'undefined' || $image === '' || $image === null) {
+                    $request->request->remove('image');
+                }
             }
-            $validated['image'] = $request->file('image')->store('images', 'public');
+
+            $validated = $request->validate([
+                'title' => 'sometimes|required|string|max:255',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'status' => 'sometimes|in:Draft,Pending,Approved,Rejected',
+                'categorie_id' => 'sometimes|exists:categories,id',
+                'content' => 'sometimes|required|string',
+            ]);
+
+            if ($request->hasFile('image')) {
+                if ($post->image) {
+                    \Storage::disk('public')->delete($post->image);
+                }
+                $validated['image'] = $request->file('image')->store('images', 'public');
+            }
+
+            $post->update($validated);
+
+            return response()->json(['message' => 'Post updated', 'post' => $post->fresh()]);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
-
-        $post->update($validated);
-
-        return response()->json(['message' => 'Post updated', 'post' => $post->fresh()]);
-
-    } catch (\Exception $e) {
-        return response()->json(['message' => $e->getMessage()], 500);
     }
-}
 
 
 
@@ -88,26 +88,51 @@ class PostController extends Controller
     // ✅ Get validated posts with filters (Both roles)
     public function validated(Request $request)
     {
-        $query = Post::where('status', 'Approved');
+        $validated = $request->validate([
+            'categorie_id' => 'sometimes|exists:categories,id',
+            'from_date' => 'sometimes|date',
+            'to_date' => 'sometimes|date|after_or_equal:from_date',
+        ]);
 
-        if ($request->filled('author_id')) {
-            $query->where('user_id', $request->author_id);
-        }
+        $query = Post::query()
+            ->where('status', 'Approved')
+            ->when(
+                isset($validated['categorie_id']),
+                fn($q) =>
+                $q->where('categorie_id', $validated['categorie_id'])
+            )
+            ->when(
+                isset($validated['from_date']),
+                fn($q) =>
+                $q->whereDate('published_at', '>=', $validated['from_date'])
+            )
+            ->when(
+                isset($validated['to_date']),
+                fn($q) =>
+                $q->whereDate('published_at', '<=', $validated['to_date'])
+            );
 
-        if ($request->filled('categorie_id')) {
-            $query->where('categorie_id', $request->categorie_id);
-        }
+        $posts = $query->with(['author', 'category'])
+            ->orderByDesc('published_at')
+            ->get();
 
-        if ($request->filled('from_date')) {
-            $query->whereDate('published_at', '>=', $request->from_date);
-        }
-
-        if ($request->filled('to_date')) {
-            $query->whereDate('published_at', '<=', $request->to_date);
-        }
-
-        return response()->json($query->with('author', 'category')->latest()->get());
+        return response()->json($posts);
     }
+   public function validatedPost($id)
+{
+    $post = Post::where('id', $id)
+                ->where('status', 'Approved')
+                ->with(['author', 'category'])
+                ->first();
+
+    if (!$post) {
+        return response()->json(['message' => 'Article non trouvé ou non approuvé.'], 404);
+    }
+
+    return response()->json($post);
+}
+
+
 
     public function index(Request $request)
     {
@@ -117,25 +142,28 @@ class PostController extends Controller
 
             if ($user->role === 'reporter') {
                 $query->where('user_id', $user->id);
+            } elseif ($request->filled('author_id')) {
                 $query->where('user_id', $request->author_id);
             }
-
 
             if ($request->filled('categorie_id')) {
                 $query->where('categorie_id', $request->categorie_id);
             }
 
-              if ($request->filled('status')) {
-                 $query->where('status', $request->status);
-             }
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
 
-            /* if ($request->filled('from_date')) {
-                 $query->whereDate('created_at', '>=', $request->from_date);
-             }
+            // Si tu veux remettre les filtres de dates plus tard
+            /*
+            if ($request->filled('from_date')) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            }
 
-             if ($request->filled('to_date')) {
-                 $query->whereDate('created_at', '<=', $request->to_date);
-             } */
+            if ($request->filled('to_date')) {
+                $query->whereDate('created_at', '<=', $request->to_date);
+            }
+            */
 
             return response()->json(
                 $query->with('author', 'category')->latest()->get()
@@ -146,14 +174,15 @@ class PostController extends Controller
     }
 
 
-   public function show(Post $post)
-{
-    if ($post->status !== 'Draft') {
-        return response()->json(['message' => 'Post non disponible'], 403);
-    }
 
-    return response()->json($post->load('author', 'category'));
-}
+    public function show(Post $post)
+    {
+        if ($post->status !== 'Draft') {
+            return response()->json(['message' => 'Post non disponible'], 403);
+        }
+
+        return response()->json($post->load('author', 'category'));
+    }
 
 
     public function getPostsEditor(Request $request)

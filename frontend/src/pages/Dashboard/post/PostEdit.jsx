@@ -11,7 +11,6 @@ import PostComment from '../../../components/PostComment'
 export default function ReviewPost() {
   const { id } = useParams()
   const dispatch = useDispatch()
-  const navigate = useNavigate()
   const { selected: post, loading, error } = useSelector((state) => state.posts)
 
     const backendUrl = process.env.REACT_APP_API_BASE_URL_St
@@ -51,14 +50,21 @@ const { user } = useSelector((state) => state.auth)
   if (error) return <p className="text-red-600">{error.message || 'Erreur'}</p>
   if (!post) return <p>Aucun article trouvé</p>
 
-  const statusOptions = [
-    { value: '', label: 'Select status', disabled: true },
-    { value: 'draft', label: 'Draft' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'rejected', label: 'Rejected' },
-  ]
+ const allStatuses = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+]
 
+const statusOptions = [
+  { value: '', label: 'Select status', disabled: true },
+  ...(
+    user.role === 'reporter'
+      ? allStatuses.filter(s => s.value === 'draft' || s.value === 'pending')
+      : allStatuses.filter(s => s.value !== 'draft')
+  ),
+]
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
       <div className="flex items-center justify-between p-4 border-b">
@@ -92,7 +98,17 @@ const { user } = useSelector((state) => state.auth)
       <span className="text-sm">{status === 'rejected' ? <PostComment content={post.comment} /> : ''}</span>
 {user.role === 'reporter' ? (
   <>
-  <ImageUploader image={image} onChange={handleFileChange} />
+  <div className="relative group w-full h-64">
+  <img
+    src={`${backendUrl}/storage/${post.image}`} 
+    alt={post.title}
+    className="w-full h-full object-cover"
+  />
+
+  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+    <ImageUploader image={image} edit={true} onChange={handleFileChange} />
+  </div>
+</div>
 
       <div className="p-6">
         <input

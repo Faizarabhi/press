@@ -23,8 +23,7 @@ export default function ReviewPost() {
   const onDelete = async () => {
     if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
       try {
-        /*  await dispatch(deletePost(id)).unwrap() */
-        navigate('/dashboard/posts') // retour à la liste après suppression
+        navigate('/dashboard/posts') 
       } catch (err) {
         alert("Erreur lors de la suppression : " + (err?.message || ''))
       }
@@ -34,16 +33,14 @@ export default function ReviewPost() {
   if (error) return <p className="text-red-600">{error.message || 'Erreur'}</p>
   if (!post) return <p>Aucun article trouvé</p>
   return (
-    <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
-      {/* Header avec actions */}
-      <div className="flex items-center justify-between p-4 border-b">
+    <div className="max-w-4xl mx-auto mt-4  shadow-md rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b ">
         <div>
           <span className="text-sm text-gray-500">
             Par <strong>{post.author.name}</strong> •{' '}
             {new Date(post.created_at).toLocaleDateString()}
           </span>
         </div>
-        {/* add if reporter */}
         <div className="flex space-x-2">
           <button
             onClick={onEdit}
@@ -62,13 +59,17 @@ export default function ReviewPost() {
         </div>
       </div>
 
-      {/* Image principale */}
      {post.image && (
-      <img
-        src={`${backendUrl}/storage/${post.image}`} 
-        alt={post.title}
-        className="w-full h-64 object-cover"
-      />
+  <div className="w-full h-[29rem] overflow-hidden rounded-md">
+  <img
+    src={`${backendUrl}/storage/${post.image}`} 
+    alt={post.title}
+    className="w-full h-full object-cover"
+  />
+</div>
+
+
+
     )}
     
       <div className="p-6">

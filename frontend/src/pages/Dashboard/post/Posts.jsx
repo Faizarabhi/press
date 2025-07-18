@@ -36,7 +36,7 @@ export default function Posts() {
 
   return (
     <div className="">
-     
+
       <h1 className="text-2xl font-bold mb-4">Liste des articles</h1>
       {user.role !== 'editor' && (<button
         onClick={() => navigate('/dashboard/posts/create')}
@@ -52,12 +52,13 @@ export default function Posts() {
         {posts?.map((post) => (
           <li
             key={post.id}
-            className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 min-h-[420px]"
+            className="w-64 h-auto overflow-hidden rounded-xl shadow bg-white"
           >
             <Article post={post} link={`/dashboard/posts/${post.id}`} />
           </li>
         ))}
       </ul>
+
     </div>
   )
 }

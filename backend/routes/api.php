@@ -13,6 +13,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // ✅ Accessible à tous (auth ou pas si besoin)
 Route::get('/posts/validated', [PostController::class, 'validated']);
+Route::get('/posts-public/{id}', [PostController::class, 'validatedPost']);
 
 // 👨‍💻 Reporter only
 Route::middleware(['auth.jwt', 'role:reporter'])->group(function () {
