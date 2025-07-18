@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { fetchPostById, deletePost } from '../../store/posts/postsSlice'
+import { fetchPostById, deletePost } from '../../../store/posts/postsSlice'
 import { CheckIcon } from '@heroicons/react/24/outline'
-import TextArea from '../../components/TextArea'
-import Select from '../../components/Select'
-import ImageUploader from '../../components/ImageUploader'
-import PostComment from '../../components/PostComment'
+import TextArea from '../../../components/TextArea'
+import Select from '../../../components/Select'
+import ImageUploader from '../../../components/ImageUploader'
+import PostComment from '../../../components/PostComment'
 
 export default function ReviewPost() {
   const { id } = useParams()

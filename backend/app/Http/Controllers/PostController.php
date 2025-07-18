@@ -10,65 +10,68 @@ class PostController extends Controller
     // ✅ Create Post (Reporter)
     public function store(Request $request)
     {
-        try{
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-            'categorie_id' => 'required|exists:categories,id',
-            'content' => 'required|string',
-        ]);
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            $validated['image'] = $path;
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'categorie_id' => 'required|exists:categories,id',
+                'content' => 'required|string',
+            ]);
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('images', 'public');
+                $validated['image'] = $path;
+            }
+            /*   dd($request->has('image')); */
+            $validated['user_id'] = auth()->id();
+
+            $post = Post::create($validated);
+
+            return response()->json($post, 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
-      /*   dd($request->has('image')); */
-        $validated['user_id'] = auth()->id();
-
-        $post = Post::create($validated);
-
-        return response()->json($post, 201);
-    } catch (\Exception $e) {
-        return response()->json(['message' => $e->getMessage()], 500);
-    }
     }
 
-    public function updateContent(Request $request, Post $post)
-    {
-
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            $validated['image'] = $path;
-        }
+   public function updateContent(Request $request, Post $post)
+{
+    try {
         if ($post->user_id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Not authorized.'], 403);
         }
 
-        // 👇 Pré-nettoyage : si "image" est vide (objet vide ou string vide), on le supprime
-        if ($request->has('image') && empty($request->input('image')) && !$request->hasFile('image')) {
-            $request->request->remove('image');
+        // Nettoyer image si elle vaut "undefined" ou vide
+        if ($request->has('image')) {
+            $image = $request->input('image');
+            if ($image === 'undefined' || $image === '' || $image === null) {
+                $request->request->remove('image');
+            }
         }
 
         $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
+            'title' => 'sometimes|required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'content' => 'sometimes|string',
+            'status' => 'sometimes|in:Draft,Pending,Approved,Rejected',
+            'categorie_id' => 'sometimes|exists:categories,id',
+            'content' => 'sometimes|required|string',
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($post->image) {
                 \Storage::disk('public')->delete($post->image);
             }
-            // store new image
-            $path = $request->file('image')->store('images', 'public');
-            $validated['image'] = $path;
+            $validated['image'] = $request->file('image')->store('images', 'public');
         }
 
         $post->update($validated);
 
-        return response()->json($post);
+        return response()->json(['message' => 'Post updated', 'post' => $post->fresh()]);
+
+    } catch (\Exception $e) {
+        return response()->json(['message' => $e->getMessage()], 500);
     }
+}
+
+
 
 
     // ✅ Update status + comment (Editor)
@@ -110,19 +113,40 @@ class PostController extends Controller
 
     public function index(Request $request)
     {
+        try {
+            $user = auth()->user();
+            $query = Post::query();
 
-        $user = auth()->user();
-        $query = Post::query();
+            if ($user->role === 'reporter') {
+                $query->where('user_id', $user->id);
+                $query->where('user_id', $request->author_id);
+            }
 
 
-        if ($user->role === 'reporter') {
-            $query->where('user_id', $user->id);
+            if ($request->filled('categorie_id')) {
+                $query->where('categorie_id', $request->categorie_id);
+            }
+
+            /*  if ($request->filled('status')) {
+                 $query->where('status', $request->status);
+             }
+
+             if ($request->filled('from_date')) {
+                 $query->whereDate('created_at', '>=', $request->from_date);
+             }
+
+             if ($request->filled('to_date')) {
+                 $query->whereDate('created_at', '<=', $request->to_date);
+             } */
+
+            return response()->json(
+                $query->with('author', 'category')->latest()->get()
+            );
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
-
-        return response()->json(
-            $query->with('author', 'category')->latest()->get()
-        );
     }
+
 
     public function show(Post $post)
     {

@@ -1,17 +1,16 @@
 import { Link } from "react-router-dom";
 
 export default function Article({ post,link }) {
+  const backendUrl = process.env.REACT_APP_API_BASE_URL_St
   return (
     <article className="flex max-w-xl flex-col items-start justify-between border p-4 rounded-lg" >
       {post.image && (
         <img
-        //  src='{post.image}'
-          src='https://industricomgroup.com/wp-content/uploads/2023/12/mggg.png'
+          src={`${backendUrl}/storage/${post.image}`} 
           alt={post.title}
           className="w-full h-48 rounded-md object-cover"
         />
       )}
-
       <div className="flex items-center gap-x-4 text-xs mt-3">
         <time dateTime={post.created_at} className="text-gray-500">
           {new Date(post.created_at).toLocaleDateString()}

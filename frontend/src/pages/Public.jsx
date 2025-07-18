@@ -3,6 +3,7 @@ import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react"
 import { fetchValidatedPosts } from "../api/postApi"
+import Header from "../components/Header";
 
 export default function Public() {
     const [posts, setPosts] = useState([])
@@ -24,96 +25,12 @@ export default function Public() {
         loadPosts()
     }, [])
 
-    const categories = [
-        { name: "Économie", href: "/categories/economie" },
-        { name: "Industrie", href: "/categories/industrie" },
-        { name: "Innovation", href: "/categories/innovation" },
-        { name: "Société", href: "/categories/societe" },
-        { name: "Technologie", href: "/categories/technologie" },
-        { name: "Environnement", href: "/categories/environnement" },
-    ];
-
-
-
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   
 
     return (
         <div className="bg-white min-h-screen">
             {/* Header */}
-            <header className="fixed inset-x-0 top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
-
-                <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
-                    <a href="/" className="flex items-center gap-2 -m-1.5 p-1.5">
-                        <img className="h-8 w-auto" src="/logopress.png" alt="Magazine Logo" />
-                    </a>
-                    <div className="flex lg:hidden">
-                        <button
-                            type="button"
-                            onClick={() => setMobileMenuOpen(true)}
-                            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 hover:bg-gray-100"
-                        >
-                            <span className="sr-only">Open menu</span>
-                            <Bars3Icon className="h-6 w-6" />
-                        </button>
-                    </div>
-                    <div className="hidden lg:flex lg:gap-x-12">
-                        {categories.map((cat) => (
-                            <a
-                                key={cat.name}
-                                href={cat.href}
-                                className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition"
-                            >
-                                {cat.name}
-                            </a>
-                        ))}
-                    </div>
-                    <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                        <a
-                            href="/login"
-                            className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition"
-                        >
-                            Login <span aria-hidden="true">&rarr;</span>
-                        </a>
-                    </div>
-                </nav>
-
-                {/* Mobile menu dialog */}
-                <Dialog open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} className="lg:hidden">
-                    <div className="fixed inset-0 z-50 bg-black/30" aria-hidden="true" />
-                    <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white p-6 shadow-lg ring-1 ring-black/5">
-                        <div className="flex items-center justify-between">
-                            <a href="/" className="flex items-center gap-2 -m-1.5 p-1.5">
-                                <img className="h-8 w-auto" src="/logopress.png" alt="Magazine Logo" />
-                            </a>
-                            <button
-                                type="button"
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="-m-2.5 rounded-md p-2.5 text-gray-700 hover:bg-gray-100"
-                            >
-                                <span className="sr-only">Close menu</span>
-                                <XMarkIcon className="h-6 w-6" />
-                            </button>
-                        </div>
-                        <div className="mt-6 space-y-4">
-                            {categories.map((cat) => (
-                                <a
-                                    key={cat.name}
-                                    href={cat.href}
-                                    className="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-100"
-                                >
-                                    {cat.name}
-                                </a>
-                            ))}
-                            <a
-                                href="/login"
-                                className="block rounded-lg px-3 py-2 mt-6 text-base font-semibold text-gray-900 hover:bg-gray-100"
-                            >
-                                Login
-                            </a>
-                        </div>
-                    </DialogPanel>
-                </Dialog>
-            </header>
+           <Header />
 
             {/* Hero Banner */}
             <main className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-32">

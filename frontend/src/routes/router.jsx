@@ -3,13 +3,14 @@ import Public from '../pages/Public'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import DashboardLayout from '../pages/Dashboard/DashboardLayout'
-import Posts from '../pages/Dashboard/Posts'
-import PostReview from '../pages/Dashboard/PostReview'
-import PostEdit from '../pages/Dashboard/PostEdit'
+import Posts from '../pages/Dashboard/post/Posts.jsx'
+import PostReview from '../pages/Dashboard/post/PostReview.jsx'
+import PostEdit from '../pages/Dashboard/post/PostEdit.jsx'
 import NotFound from '../pages/NotFound'
 import ReadPost from '../pages/ReadPost'
 import { ProtectedRoute } from '../routes/ProtectedRoute.js'
-import PostCreate from '../pages/Dashboard/PostCreate.jsx'
+import PostCreate from '../pages/Dashboard/post/PostCreate.jsx'
+import CategoryManage from '../pages/Dashboard/categories/CategoryManage.jsx'
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,14 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      {
+        path: 'categories',
+        element: (
+          <ProtectedRoute>
+            <CategoryManage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: 'posts',
         element: (

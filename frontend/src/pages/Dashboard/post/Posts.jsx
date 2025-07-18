@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAllPosts, fetchMyPosts } from '../../store/posts/postsSlice'
-import Article from '../../components/Article'
+import { fetchAllPosts, fetchMyPosts } from '../../../store/posts/postsSlice'
+import Article from '../../../components/Article'
+import { useNavigate } from 'react-router-dom'
+import { PlusIcon } from '@heroicons/react/24/outline'
 
 export default function Posts() {
   const dispatch = useDispatch()
@@ -18,6 +20,7 @@ export default function Posts() {
     }
   }, [dispatch, user])
 
+  const navigate = useNavigate()
   if (loading) return <p className="text-gray-500">Chargement...</p>
   if (error) return <p className="text-red-500">{error?.message || 'Erreur serveur'}</p>
   if (!posts.length) return <p className="text-gray-500">Aucun article trouvé.</p>
@@ -25,6 +28,16 @@ export default function Posts() {
   return (
     <div className="px-4">
       <h1 className="text-2xl font-bold mb-4">Liste des articles</h1>
+
+      <button
+        onClick={() => navigate('/dashboard/posts/create')}
+        type="button"
+        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+      >
+        <PlusIcon className="w-5 h-5" />
+        Enregistrer
+      </button>
+
       <ul className="flex justify-center flex-wrap gap-4">
         {posts.map((post) => (
           <li

@@ -1,35 +1,35 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { fetchPostById, deletePost } from '../../store/posts/postsSlice'
+import { fetchPostById, deletePost } from '../../../store/posts/postsSlice'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 export default function ReviewPost() {
-
-   const { id } = useParams()
+  const backendUrl = process.env.REACT_APP_API_BASE_URL_St
+  const { id } = useParams()
   const dispatch = useDispatch()
   const { selected: post, loading, error } = useSelector((state) => state.posts)
 
   useEffect(() => {
     if (id) dispatch(fetchPostById(id))
-        console.log("Post sélectionné :", post)
+    console.log("Post sélectionné :", post)
   }, [id])
-const navigate = useNavigate()
+  const navigate = useNavigate()
 
-const onEdit = () => {
-  navigate(`/dashboard/posts/${id}/edit`)
-}
+  const onEdit = () => {
+    navigate(`/dashboard/posts/${id}/edit`)
+  }
 
-const onDelete = async () => {
-  if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
-    try {
-     /*  await dispatch(deletePost(id)).unwrap() */
-      navigate('/dashboard/posts') // retour à la liste après suppression
-    } catch (err) {
-      alert("Erreur lors de la suppression : " + (err?.message || ''))
+  const onDelete = async () => {
+    if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
+      try {
+        /*  await dispatch(deletePost(id)).unwrap() */
+        navigate('/dashboard/posts') // retour à la liste après suppression
+      } catch (err) {
+        alert("Erreur lors de la suppression : " + (err?.message || ''))
+      }
     }
   }
-}
   if (loading) return <p>Chargement...</p>
   if (error) return <p className="text-red-600">{error.message || 'Erreur'}</p>
   if (!post) return <p>Aucun article trouvé</p>
@@ -63,15 +63,14 @@ const onDelete = async () => {
       </div>
 
       {/* Image principale */}
-      {post.image && (
-        <img
-          src={post.image}
-          alt="cover"
-          className="w-full h-64 object-cover"
-        />
-      )}
-
-      {/* Contenu */}
+     {post.image && (
+      <img
+        src={`${backendUrl}/storage/${post.image}`} 
+        alt={post.title}
+        className="w-full h-64 object-cover"
+      />
+    )}
+    
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">{post.title}</h1>
         <span className="inline-block bg-gray-100 text-sm font-medium text-gray-600 px-3 py-1 rounded-full mb-4">
