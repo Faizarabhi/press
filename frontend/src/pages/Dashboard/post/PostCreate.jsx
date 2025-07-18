@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { createPost } from '../../../store/posts/postsSlice'
 import { fetchCategories } from '../../../store/category/categorySlice'
 import ImageUploader from '../../../components/ImageUploader'
+import { useNavigate } from 'react-router-dom'
 
 const PostCreate = () => {
   const dispatch = useDispatch()
@@ -17,6 +18,7 @@ const PostCreate = () => {
   const [categorie_id, setCategorieId] = useState('')
   const [status, setStatus] = useState('draft')
 
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchCategories())
   }, [dispatch])
@@ -54,6 +56,7 @@ const PostCreate = () => {
       setCategorieId('')
       setStatus('draft')
       alert('Article créé avec succès')
+      navigate('/dashboard/posts')
     } catch (err) {
       console.error(err)
     }

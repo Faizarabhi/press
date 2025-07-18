@@ -14,11 +14,12 @@ export default function ReviewPost() {
   const navigate = useNavigate()
   const { selected: post, loading, error } = useSelector((state) => state.posts)
 
+    const backendUrl = process.env.REACT_APP_API_BASE_URL_St
   const [status, setStatus] = useState('')
   const [image, setImage] = useState(null)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-
+const { user } = useSelector((state) => state.auth)
   useEffect(() => {
     if (id) dispatch(fetchPostById(id))
   }, [id, dispatch])
@@ -89,8 +90,9 @@ export default function ReviewPost() {
         
       </div>
       <span className="text-sm">{status === 'rejected' ? <PostComment content={post.comment} /> : ''}</span>
-
-      <ImageUploader image={image} onChange={handleFileChange} />
+{user.role === 'reporter' ? (
+  <>
+  <ImageUploader image={image} onChange={handleFileChange} />
 
       <div className="p-6">
         <input
@@ -101,6 +103,26 @@ export default function ReviewPost() {
         />
         <TextArea content={content} onChange={(e) => setContent(e.target.value)} />
       </div>
+      </>
+):(  <>
+      <img
+        src={`${backendUrl}/storage/${post.image}`} 
+        alt={post.title}
+        className="w-full h-64 object-cover"
+      />
+    
+    
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{post.title}</h1>
+        <span className="inline-block bg-gray-100 text-sm font-medium text-gray-600 px-3 py-1 rounded-full mb-4">
+          {post.category.name}
+        </span>
+        <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+          {post.content}
+        </p>
+      </div>
+  </>)}
+      
     </div>
   )
 }

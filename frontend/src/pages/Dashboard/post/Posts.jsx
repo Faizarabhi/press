@@ -23,23 +23,33 @@ export default function Posts() {
   const navigate = useNavigate()
   if (loading) return <p className="text-gray-500">Chargement...</p>
   if (error) return <p className="text-red-500">{error?.message || 'Erreur serveur'}</p>
-  if (!posts.length) return <p className="text-gray-500">Aucun article trouvé.</p>
+  if (!posts.length) return <div className="text-gray-500">
+    {user.role !== 'editor' && (<button
+      onClick={() => navigate('/dashboard/posts/create')}
+      type="button"
+      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+    >
+      <PlusIcon className="w-5 h-5" />
+      Enregistrer
+    </button>)}
+    <p>Aucun article trouvé.</p> </div>
 
   return (
-    <div className="px-4">
+    <div className="">
+     
       <h1 className="text-2xl font-bold mb-4">Liste des articles</h1>
-
-      <button
+      {user.role !== 'editor' && (<button
         onClick={() => navigate('/dashboard/posts/create')}
         type="button"
         className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
       >
         <PlusIcon className="w-5 h-5" />
         Enregistrer
-      </button>
+      </button>)}
+
 
       <ul className="flex justify-center flex-wrap gap-4">
-        {posts.map((post) => (
+        {posts?.map((post) => (
           <li
             key={post.id}
             className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 min-h-[420px]"
