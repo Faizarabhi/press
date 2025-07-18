@@ -21,7 +21,6 @@ class PostController extends Controller
                 $path = $request->file('image')->store('images', 'public');
                 $validated['image'] = $path;
             }
-            /*   dd($request->has('image')); */
             $validated['user_id'] = auth()->id();
 
             $post = Post::create($validated);
@@ -39,7 +38,6 @@ class PostController extends Controller
             return response()->json(['message' => 'Not authorized.'], 403);
         }
 
-        // Nettoyer image si elle vaut "undefined" ou vide
         if ($request->has('image')) {
             $image = $request->input('image');
             if ($image === 'undefined' || $image === '' || $image === null) {
@@ -127,11 +125,11 @@ class PostController extends Controller
                 $query->where('categorie_id', $request->categorie_id);
             }
 
-            /*  if ($request->filled('status')) {
+              if ($request->filled('status')) {
                  $query->where('status', $request->status);
              }
 
-             if ($request->filled('from_date')) {
+            /* if ($request->filled('from_date')) {
                  $query->whereDate('created_at', '>=', $request->from_date);
              }
 
@@ -148,10 +146,15 @@ class PostController extends Controller
     }
 
 
-    public function show(Post $post)
-    {
-        return response()->json($post->load('author', 'category'));
+   public function show(Post $post)
+{
+    if ($post->status !== 'Draft') {
+        return response()->json(['message' => 'Post non disponible'], 403);
     }
+
+    return response()->json($post->load('author', 'category'));
+}
+
 
     public function getPostsEditor(Request $request)
     {
