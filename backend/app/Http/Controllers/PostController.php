@@ -31,6 +31,68 @@ class PostController extends Controller
         }
     }
 
+    // ✅ Update status + comment (Editor)
+    public function updateStatus(Request $request, Post $post)
+{
+    $request->validate([
+        'status' => 'required|in:Pending,Approved,Rejected',
+        'rejection_comment' => 'nullable|string',
+    ]);
+
+    $post->status = $request->status;
+    $post->rejection_comment = $request->rejection_comment; // <= Important
+
+    $post->save();
+
+    return response()->json(['message' => 'Status updated', 'post' => $post]);
+}
+
+    // ✅ Get validated posts with filters (Both roles)
+    public function validated(Request $request)
+    {
+        $validated = $request->validate([
+            'categorie_id' => 'sometimes|exists:categories,id',
+            'from_date' => 'sometimes|date',
+            'to_date' => 'sometimes|date|after_or_equal:from_date',
+        ]);
+
+        $query = Post::query()
+            ->where('status', 'Approved')
+            ->when(
+                isset($validated['categorie_id']),
+                fn($q) =>
+                $q->where('categorie_id', $validated['categorie_id'])
+            )
+            ->when(
+                isset($validated['from_date']),
+                fn($q) =>
+                $q->whereDate('published_at', '>=', $validated['from_date'])
+            )
+            ->when(
+                isset($validated['to_date']),
+                fn($q) =>
+                $q->whereDate('published_at', '<=', $validated['to_date'])
+            );
+
+        $posts = $query->with(['author', 'category'])
+            ->orderByDesc('published_at')
+            ->get();
+
+        return response()->json($posts);
+    }
+    public function validatedPost($id)
+    {
+        $post = Post::where('id', $id)
+            ->where('status', 'Approved')
+            ->with(['author', 'category'])
+            ->first();
+
+        if (!$post) {
+            return response()->json(['message' => 'Article non trouvé ou non approuvé.'], 404);
+        }
+
+        return response()->json($post);
+    }
     public function updateContent(Request $request, Post $post)
     {
         try {
@@ -72,65 +134,9 @@ class PostController extends Controller
 
 
 
-    // ✅ Update status + comment (Editor)
-    public function updateStatus(Request $request, Post $post)
-    {
-        $validated = $request->validate([
-            'status' => 'required|in:Draft,Pending,Approved,Rejected',
-            'rejection_comment' => 'nullable|string',
-        ]);
 
-        $post->update($validated);
 
-        return response()->json($post);
-    }
 
-    // ✅ Get validated posts with filters (Both roles)
-    public function validated(Request $request)
-    {
-        $validated = $request->validate([
-            'categorie_id' => 'sometimes|exists:categories,id',
-            'from_date' => 'sometimes|date',
-            'to_date' => 'sometimes|date|after_or_equal:from_date',
-        ]);
-
-        $query = Post::query()
-            ->where('status', 'Approved')
-            ->when(
-                isset($validated['categorie_id']),
-                fn($q) =>
-                $q->where('categorie_id', $validated['categorie_id'])
-            )
-            ->when(
-                isset($validated['from_date']),
-                fn($q) =>
-                $q->whereDate('published_at', '>=', $validated['from_date'])
-            )
-            ->when(
-                isset($validated['to_date']),
-                fn($q) =>
-                $q->whereDate('published_at', '<=', $validated['to_date'])
-            );
-
-        $posts = $query->with(['author', 'category'])
-            ->orderByDesc('published_at')
-            ->get();
-
-        return response()->json($posts);
-    }
-   public function validatedPost($id)
-{
-    $post = Post::where('id', $id)
-                ->where('status', 'Approved')
-                ->with(['author', 'category'])
-                ->first();
-
-    if (!$post) {
-        return response()->json(['message' => 'Article non trouvé ou non approuvé.'], 404);
-    }
-
-    return response()->json($post);
-}
 
 
 
@@ -150,9 +156,12 @@ class PostController extends Controller
                 $query->where('categorie_id', $request->categorie_id);
             }
 
-            if ($request->filled('status')) {
+            if ($request->filled('role') === 'editor' && $request->filled('status')) {
                 $query->where('status', $request->status);
+            } else {
+                $query->where('status', '!=', 'draft');
             }
+
 
             // Si tu veux remettre les filtres de dates plus tard
             /*
@@ -175,14 +184,17 @@ class PostController extends Controller
 
 
 
-    public function show(Post $post)
+    public function show($id)
     {
-        if ($post->status !== 'Draft') {
-            return response()->json(['message' => 'Post non disponible'], 403);
+        $post = Post::with('category')->find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Article non trouvé.'], 404);
         }
 
-        return response()->json($post->load('author', 'category'));
+        return response()->json($post);
     }
+
 
 
     public function getPostsEditor(Request $request)

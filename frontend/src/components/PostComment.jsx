@@ -1,6 +1,6 @@
 import { PaperClipIcon, MapPinIcon, PhotoIcon } from '@heroicons/react/24/outline'
 
-export default function TextArea({content = ''}) {
+export default function TextArea({content = '', onChange}) {
   return (
     <form>
       <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 ">
@@ -12,11 +12,11 @@ export default function TextArea({content = ''}) {
             id="comment"
             rows="4"
             defaultValue={content}
+             onChange={onChange}  
             className="w-full px-0 text-sm text-gray-900 bg-white border-0 focus:ring-0 "
             placeholder="Write a comment..."
             required
           >
-            
           </textarea>
         </div>
         <div className="flex items-center justify-between px-3 py-2 border-t border-gray-200 ">

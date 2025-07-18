@@ -15,13 +15,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/posts/validated', [PostController::class, 'validated']);
 Route::get('/posts-public/{id}', [PostController::class, 'validatedPost']);
 
-// 👨‍💻 Reporter only
-Route::middleware(['auth.jwt', 'role:reporter'])->group(function () {
-    Route::post('/posts', [PostController::class, 'store']);
-    Route::put('/posts/{post}/edit-content', [PostController::class, 'updateContent']);
 
-    Route::get('/posts-reporter', [PostController::class, 'index']);
-});
  Route::middleware(['auth.jwt'])->get('/me', function () {
     return response()->json([
         'user' => auth()->user(),
@@ -29,10 +23,20 @@ Route::middleware(['auth.jwt', 'role:reporter'])->group(function () {
     ]);
 });
 
+// 👨‍💻 Reporter only
+Route::middleware(['auth.jwt', 'role:reporter'])->group(function () {
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::put('/posts/{post}/edit-content', [PostController::class, 'updateContent']);
+
+    Route::get('/posts-reporter', [PostController::class, 'index']);
+});
+
+
 // 🧑‍🏫 Editor only
 Route::middleware(['auth.jwt', 'role:editor'])->group(function () {
     Route::put('/posts/{post}/update-status', [PostController::class, 'updateStatus']);
     Route::get('/posts', [PostController::class, 'index']);
+
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{id}', [CategoryController::class, 'update']);

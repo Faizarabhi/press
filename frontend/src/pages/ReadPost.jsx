@@ -1,34 +1,79 @@
-import React, { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPostById } from '../store/posts/postsSlice'
-import Header from '../components/Header'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { fetchValidatedPostPublicById } from '../store/posts/postsSlice'  
 
-export default function ReadPost() {
-    const { id } = useParams()
-    const dispatch = useDispatch()
+export default function ReviewPost() {
+  const backendUrl = process.env.REACT_APP_API_BASE_URL_St
+  const { id } = useParams()
+  const dispatch = useDispatch()
+  const { selected: post, loading, error } = useSelector((state) => state.posts)
 
-    const backendUrl = process.env.REACT_APP_API_BASE_URL_St
-    const { selected: post, loading, error } = useSelector((state) => state.posts)
+  useEffect(() => {
+    if (id) dispatch(fetchValidatedPostPublicById(id))  // <-- fetch post public validé
+    console.log("Post sélectionné :", post)
+  }, [id, dispatch])
 
-    useEffect(() => {
-        if (id) dispatch(fetchPostById(id))
-    }, [id, dispatch])
+  const navigate = useNavigate()
 
-    if (loading) return <p>Chargement...</p>
-    if (error) return <p className="text-red-600">{error}</p>
-    if (!post) return <p>Aucun article trouvé</p>
+  // Si post public : on peut désactiver ces fonctions ou les cacher dans le JSX
+  const onEdit = () => {
+    navigate(`/dashboard/posts/${id}/edit`)
+  }
 
-    return (
+  const onDelete = async () => {
+    if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
+      try {
+        // dispatch(deletePost(id)) // si suppression possible et action définie
+        navigate('/dashboard/posts') 
+      } catch (err) {
+        alert("Erreur lors de la suppression : " + (err?.message || ''))
+      }
+    }
+  }
+
+  if (loading) return <p>Chargement...</p>
+  if (error) return <p className="text-red-600">{error.message || 'Erreur'}</p>
+  if (!post) return <p>Aucun article trouvé</p>
+
+  return (
+    <div className="max-w-4xl mx-auto mt-4 shadow-md rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b ">
         <div>
-            <Header/>
-        <div className="max-w-3xl mx-auto p-6 relative isolate overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-32">
-            <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+          <span className="text-sm text-gray-500">
+            Par <strong>{post.author.name}</strong> •{' '}
+            {new Date(post.created_at).toLocaleDateString()}
+          </span>
+        </div>
 
-            <img src={`${backendUrl}/storage/${post.image}`} alt="post cover" className="mb-4 w-full h-[29rem] object-cover  rounded" />
-            <p className="mb-4 text-gray-600">Par {post.author?.name} le {new Date(post.created_at).toLocaleDateString()}</p>
+        {/* Cacher les boutons si public (optionnel) */}
+        {/* <div className="flex space-x-2">
+          <button onClick={onEdit} className="text-indigo-600 hover:text-indigo-800" title="Modifier">
+            <PencilSquareIcon className="h-5 w-5" />
+          </button>
+          <button onClick={onDelete} className="text-red-600 hover:text-red-800" title="Supprimer">
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div> */}
+      </div>
 
-            <div className="whitespace-pre-line">{post.content}</div>
-        </div></div>
-    )
+      {post.image && (
+        <div className="w-full h-[29rem] overflow-hidden rounded-md">
+          <img
+            src={`${backendUrl}/storage/${post.image}`} 
+            alt={post.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{post.title}</h1>
+        <span className="inline-block bg-gray-100 text-sm font-medium text-gray-600 px-3 py-1 rounded-full mb-4">
+          {post.category.name}
+        </span>
+        <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content}</p>
+      </div>
+    </div>
+  )
 }

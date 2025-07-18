@@ -37,7 +37,7 @@ export default function ReviewPost() {
       <div className="flex items-center justify-between p-4 border-b ">
         <div>
           <span className="text-sm text-gray-500">
-            Par <strong>{post.author.name}</strong> •{' '}
+            Par <strong>{post?.author?.name}</strong> •{' '}
             {new Date(post.created_at).toLocaleDateString()}
           </span>
         </div>
@@ -75,7 +75,7 @@ export default function ReviewPost() {
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">{post.title}</h1>
         <span className="inline-block bg-gray-100 text-sm font-medium text-gray-600 px-3 py-1 rounded-full mb-4">
-          {post.category.name}
+          {post?.category?.name}
         </span>
         <p className="text-gray-700 leading-relaxed whitespace-pre-line">
           {post.content}
