@@ -26,7 +26,8 @@ Route::get('/posts-public/{id}', [PostController::class, 'validatedPost']);
 // 👨‍💻 Reporter only
 Route::middleware(['auth.jwt', 'role:reporter'])->group(function () {
     Route::post('/posts', [PostController::class, 'store']);
-    Route::put('/posts/{post}/edit-content', [PostController::class, 'updateContent']);
+    Route::post('/posts/{post}/edit-content', [PostController::class, 'updateContent']);
+
 
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
     Route::get('/posts-reporter', [PostController::class, 'index']);

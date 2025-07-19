@@ -38,13 +38,12 @@ export default function ReviewPost() {
   }, [post])
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => setImage(reader.result)
-      reader.readAsDataURL(file)
-    }
+  const file = e.target.files[0];
+  if (file) {
+    setImage(file); 
   }
+};
+
 
   const handleSave = async () => {
     console.log(rejectionComment)

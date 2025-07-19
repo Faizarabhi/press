@@ -2,7 +2,7 @@ import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { logout } from '../store/auth/authSlice' // adapte le path
+import { logout } from '../store/auth/authSlice'
 
 function Header() {
   const categories = []

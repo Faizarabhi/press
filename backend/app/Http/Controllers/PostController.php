@@ -89,52 +89,64 @@ class PostController extends Controller
 
         return response()->json($post);
     }
-    public function updateContent(Request $request, Post $post)
-    {
-        try {
-            if ($post->user_id !== auth()->id()) {
-                return response()->json(['message' => 'Not authorized.'], 403);
-            }
+public function updateContent(Request $request, Post $post)
+{
+    try {
+        // Authentification du propriétaire
+        if ($post->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Not authorized.'], 403);
+        }
 
-            if ($request->has('image')) {
-                $image = $request->input('image');
-                if ($image === 'undefined' || $image === '' || $image === null) {
-                    $request->request->remove('image');
-                }
-            }
+        // Validation de base, sans l'image
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'content' => 'sometimes|required|string',
+            'status' => 'sometimes|in:Draft,Pending,Approved,Rejected',
+            'categorie_id' => 'sometimes|exists:categories,id',
+        ]);
 
-            $validated = $request->validate([
-                'title' => 'sometimes|required|string|max:255',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'status' => 'sometimes|in:Draft,Pending,Approved,Rejected',
-                'categorie_id' => 'sometimes|exists:categories,id',
-                'content' => 'sometimes|required|string',
+        // Gérer le champ image
+        if ($request->hasFile('image')) {
+            // Valider et stocker le fichier
+            $request->validate([
+                'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
-            if ($request->hasFile('image')) {
-                if ($post->image) {
-                    \Storage::disk('public')->delete($post->image);
-                }
-                $validated['image'] = $request->file('image')->store('images', 'public');
+            if ($post->image) {
+                \Storage::disk('public')->delete($post->image);
             }
 
-            $post->update($validated);
+            $validated['image'] = $request->file('image')->store('images', 'public');
 
-            return response()->json(['message' => 'Post updated', 'post' => $post->fresh()]);
-
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } elseif ($request->input('image') === 'null') {
+            // Demande explicite de suppression de l'image
+            if ($post->image) {
+                \Storage::disk('public')->delete($post->image);
+            }
+            $validated['image'] = null;
         }
+
+        // Mise à jour
+        $post->update($validated);
+
+        return response()->json([
+            'message' => 'Post updated successfully',
+            'post' => $post->fresh()
+        ], 200);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $e->errors(),
+        ], 422);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error updating post',
+            'error' => $e->getMessage()
+        ], 500);
     }
-
-
-
-
-
-
-
-
-
+}
 
     public function index(Request $request)
     {
@@ -223,22 +235,22 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-   public function destroy($id)
-{
-    $post = Post::find($id);
+    public function destroy($id)
+    {
+        $post = Post::find($id);
 
-    if (!$post) {
-        return response()->json(['message' => 'Post not found'], 404);
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        if (auth()->id() !== $post->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $post->delete();
+
+        return response()->json(['message' => 'Post deleted successfully']);
     }
-
-    if (auth()->id() !== $post->user_id) {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
-
-    $post->delete();
-
-    return response()->json(['message' => 'Post deleted successfully']);
-}
 
 
 }

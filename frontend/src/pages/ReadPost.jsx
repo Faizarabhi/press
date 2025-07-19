@@ -10,13 +10,12 @@ export default function ReviewPost() {
   const { selected: post, loading, error } = useSelector((state) => state.posts)
 
   useEffect(() => {
-    if (id) dispatch(fetchValidatedPostPublicById(id))  // <-- fetch post public validé
+    if (id) dispatch(fetchValidatedPostPublicById(id)) 
     console.log("Post sélectionné :", post)
   }, [id, dispatch])
 
   const navigate = useNavigate()
 
-  // Si post public : on peut désactiver ces fonctions ou les cacher dans le JSX
   const onEdit = () => {
     navigate(`/dashboard/posts/${id}/edit`)
   }
@@ -24,7 +23,7 @@ export default function ReviewPost() {
   const onDelete = async () => {
     if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
       try {
-        // dispatch(deletePost(id)) // si suppression possible et action définie
+       
         navigate('/dashboard/posts') 
       } catch (err) {
         alert("Erreur lors de la suppression : " + (err?.message || ''))

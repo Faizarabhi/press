@@ -87,15 +87,39 @@ export const updatePostContent = createAsyncThunk(
   "posts/updateContent",
   async ({ id, data }, thunkAPI) => {
     try {
-      const res = await api.put(`/posts/${id}/edit-content`, data);
+      const formData = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== "") {
+          if (key === "image") {
+            if (value === null) {
+              // signaler qu'on veut supprimer l'image
+              formData.append("image", "null");
+            } else if (value instanceof File) {
+              formData.append("image", value);
+            }
+            // sinon on ignore si image est vide
+          } else {
+            formData.append(key, value);
+          }
+        }
+      });
+
+      const res = await api.post(`/posts/${id}/edit-content`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
-        err.response?.data || "Erreur mise à jour contenu"
+        err.response?.data || { message: "Erreur mise à jour post" }
       );
     }
   }
 );
+
 
 // 🧑‍🏫 Editor : valider / rejeter
 export const updatePostStatus = createAsyncThunk(
@@ -117,7 +141,7 @@ export const deletePost = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       await api.delete(`/posts/${id}`);
-      return id; // we return the id to remove it from state
+      return id; 
     } catch (err) {
       return thunkAPI.rejectWithValue(
         err.response?.data || "Erreur suppression"
