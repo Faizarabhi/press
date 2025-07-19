@@ -20,15 +20,17 @@ export default function ReviewPost() {
     navigate(`/dashboard/posts/${id}/edit`)
   }
 
-  const onDelete = async () => {
-    if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
-      try {
-        navigate('/dashboard/posts') 
-      } catch (err) {
-        alert("Erreur lors de la suppression : " + (err?.message || ''))
-      }
+const onDelete = async () => {
+  if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
+    try {
+      await dispatch(deletePost(id)).unwrap()
+      navigate('/dashboard/posts')
+    } catch (err) {
+      alert("Erreur lors de la suppression : " + (err?.message || ''))
     }
   }
+}
+
   if (loading) return <p>Chargement...</p>
   if (error) return <p className="text-red-600">{error.message || 'Erreur'}</p>
   if (!post) return <p>Aucun article trouvé</p>
@@ -37,7 +39,7 @@ export default function ReviewPost() {
       <div className="flex items-center justify-between p-4 border-b ">
         <div>
           <span className="text-sm text-gray-500">
-            Par <strong>{post?.author?.name}</strong> •{' '}
+            Par <strong>{post.author?.name}</strong> •{' '}
             {new Date(post.created_at).toLocaleDateString()}
           </span>
         </div>

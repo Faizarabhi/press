@@ -111,6 +111,20 @@ export const updatePostStatus = createAsyncThunk(
     }
   }
 );
+// delete
+export const deletePost = createAsyncThunk(
+  "posts/delete",
+  async (id, thunkAPI) => {
+    try {
+      await api.delete(`/posts/${id}`);
+      return id; // we return the id to remove it from state
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data || "Erreur suppression"
+      );
+    }
+  }
+);
 
 const postsSlice = createSlice({
   name: "posts",
@@ -154,6 +168,9 @@ const postsSlice = createSlice({
       })
       .addCase(fetchValidatedPostPublicById.fulfilled, (state, action) => {
         state.selected = action.payload;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.items = state.items.filter((post) => post.id !== action.payload);
       });
   },
 });

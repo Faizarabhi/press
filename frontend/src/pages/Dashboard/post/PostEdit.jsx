@@ -7,6 +7,7 @@ import TextArea from '../../../components/TextArea'
 import Select from '../../../components/Select'
 import ImageUploader from '../../../components/ImageUploader'
 import PostComment from '../../../components/PostComment'
+import { MessageRejected } from '../../../components/MessageRejected'
 
 export default function ReviewPost() {
   const { id } = useParams()
@@ -26,12 +27,13 @@ export default function ReviewPost() {
   }, [id, dispatch])
 
   useEffect(() => {
+    console.log("", post?.rejection_comment)
     if (post) {
       setStatus(post.status)
       setTitle(post.title)
       setContent(post.content)
       setImage(post.image)
-      setRejectionComment(post.rejection_comment || '');
+      setRejectionComment(post.rejection_comment);
     }
   }, [post])
 
@@ -54,7 +56,7 @@ export default function ReviewPost() {
       if (user.role === 'editor') {
         await dispatch(updatePostStatus({ id, data: { status, rejection_comment: rejectionComment } }));
       }
-
+    dispatch(fetchPostById(post.id))
       alert('Modifications enregistrées !');
     } catch (err) {
       alert("Erreur lors de la sauvegarde.");
@@ -109,7 +111,11 @@ export default function ReviewPost() {
           </button>
 
         </div>
-
+      </div>
+      <div>
+        {post?.rejection_comment && (
+          <MessageRejected title={post.rejection_comment} />
+        )}
       </div>
       <span className="text-sm">{status === 'Rejected' ? <TextArea content={rejectionComment} onChange={(e) => setRejectionComment(e.target.value)} />
         : ''}</span>
@@ -156,7 +162,6 @@ export default function ReviewPost() {
           </p>
         </div>
       </>)}
-
     </div>
   )
 }

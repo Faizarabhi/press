@@ -33,20 +33,16 @@ class PostController extends Controller
 
     // ✅ Update status + comment (Editor)
     public function updateStatus(Request $request, Post $post)
-{
-    $request->validate([
-        'status' => 'required|in:Pending,Approved,Rejected',
-        'rejection_comment' => 'nullable|string',
-    ]);
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:Draft,Pending,Approved,Rejected',
+            'rejection_comment' => 'nullable|string',
+        ]);
 
-    $post->status = $request->status;
-    $post->rejection_comment = $request->rejection_comment; // <= Important
+        $post->update($validated);
 
-    $post->save();
-
-    return response()->json(['message' => 'Status updated', 'post' => $post]);
-}
-
+        return response()->json($post);
+    }
     // ✅ Get validated posts with filters (Both roles)
     public function validated(Request $request)
     {
@@ -147,8 +143,17 @@ class PostController extends Controller
             $query = Post::query();
 
             if ($user->role === 'reporter') {
+                // Reporter : uniquement ses propres posts (tous les statuts)
                 $query->where('user_id', $user->id);
-            } elseif ($request->filled('author_id')) {
+            }
+
+            if ($user->role === 'editor') {
+                // Editor : tous les posts sauf ceux en draft
+                $query->where('status', '!=', 'draft');
+            }
+
+            // Filtres communs (peu importe le rôle)
+            if ($request->filled('author_id')) {
                 $query->where('user_id', $request->author_id);
             }
 
@@ -156,23 +161,10 @@ class PostController extends Controller
                 $query->where('categorie_id', $request->categorie_id);
             }
 
-            if ($request->filled('role') === 'editor' && $request->filled('status')) {
+            // Filtrage de statut en plus (si demandé explicitement)
+            if ($request->filled('status')) {
                 $query->where('status', $request->status);
-            } else {
-                $query->where('status', '!=', 'draft');
             }
-
-
-            // Si tu veux remettre les filtres de dates plus tard
-            /*
-            if ($request->filled('from_date')) {
-                $query->whereDate('created_at', '>=', $request->from_date);
-            }
-
-            if ($request->filled('to_date')) {
-                $query->whereDate('created_at', '<=', $request->to_date);
-            }
-            */
 
             return response()->json(
                 $query->with('author', 'category')->latest()->get()
@@ -181,6 +173,7 @@ class PostController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
 
 
 
@@ -225,21 +218,27 @@ class PostController extends Controller
             $query->whereDate('published_at', '<=', $request->to_date);
         }
 
-        // Relations + tri
         $posts = $query->with('author', 'category')->latest()->get();
 
         return response()->json($posts);
     }
 
-    public function destroy(Post $post)
-    {
-        if (auth()->id() !== $post->user_id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+   public function destroy($id)
+{
+    $post = Post::find($id);
 
-        $post->delete(); // soft delete
-
-        return response()->json(['message' => 'Post deleted successfully']);
+    if (!$post) {
+        return response()->json(['message' => 'Post not found'], 404);
     }
+
+    if (auth()->id() !== $post->user_id) {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    $post->delete();
+
+    return response()->json(['message' => 'Post deleted successfully']);
+}
+
 
 }
