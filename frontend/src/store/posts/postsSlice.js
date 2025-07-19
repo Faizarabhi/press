@@ -26,12 +26,21 @@ export const fetchValidatedPostPublicById = createAsyncThunk(
     }
   }
 );
-// 🧑‍💻 Reporter : voir ses propres posts
+
+// 🧑‍💻 Reporter : voir ses propres posts avec filtres
 export const fetchMyPosts = createAsyncThunk(
   "posts/my",
-  async (_, thunkAPI) => {
+  async (filters = {}, thunkAPI) => {
     try {
-      const res = await api.get("/posts-reporter");
+      const params = new URLSearchParams();
+
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          params.append(key, value);
+        }
+      });
+
+      const res = await api.get(`/posts-reporter?${params.toString()}`);
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || "Erreur serveur");
@@ -39,18 +48,9 @@ export const fetchMyPosts = createAsyncThunk(
   }
 );
 
+
 // 🧑‍🏫 Editor : voir tous les posts
-/* export const fetchAllPosts = createAsyncThunk(
-  "posts/all",
-  async (_, thunkAPI) => {
-    try {
-      const res = await api.get("/posts");
-      return res.data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data || "Erreur serveur");
-    }
-  }
-); */
+
 export const fetchAllPosts = createAsyncThunk(
   "posts/all",
   async (filters = {}, thunkAPI) => {
