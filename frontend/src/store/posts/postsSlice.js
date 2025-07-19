@@ -40,11 +40,30 @@ export const fetchMyPosts = createAsyncThunk(
 );
 
 // 🧑‍🏫 Editor : voir tous les posts
-export const fetchAllPosts = createAsyncThunk(
+/* export const fetchAllPosts = createAsyncThunk(
   "posts/all",
   async (_, thunkAPI) => {
     try {
       const res = await api.get("/posts");
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data || "Erreur serveur");
+    }
+  }
+); */
+export const fetchAllPosts = createAsyncThunk(
+  "posts/all",
+  async (filters = {}, thunkAPI) => {
+    try {
+      const params = new URLSearchParams();
+
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          params.append(key, value);
+        }
+      });
+
+      const res = await api.get(`/posts?${params.toString()}`);
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || "Erreur serveur");

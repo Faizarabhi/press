@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { Outlet, Link } from 'react-router-dom'
 import { logout } from '../../store/auth/authSlice'
+import Filter from '../../components/Filter'
 
 export default function DashboardLayout() {
 
@@ -21,8 +22,9 @@ export default function DashboardLayout() {
           {user.role === 'editor' && 
           <Link to="/dashboard/categories" className="hover:text-indigo-400">categories</Link>}
           </div>
+
+            <Filter/>
           <div>
-            
           <button
             onClick={handleLogout}
             className="text-sm font-semibold text-gray-200 hover:text-orange-600 transition"

@@ -16,7 +16,9 @@ export default function ReviewPost() {
 
   const backendUrl = process.env.REACT_APP_API_BASE_URL_St
   const [status, setStatus] = useState('')
-  const [image, setImage] = useState(null)
+  const [image, setImage] = useState(null)     
+const [preview, setPreview] = useState('') 
+
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [rejectionComment, setRejectionComment] = useState('');
@@ -32,7 +34,14 @@ export default function ReviewPost() {
       setStatus(post.status)
       setTitle(post.title)
       setContent(post.content)
-      setImage(post.image)
+      setStatus(post.status)
+      //setImage(post.image)
+       setImage(null) 
+       if (post.image) {
+      setPreview(`${backendUrl}/storage/${post.image}`)
+    } else {
+      setPreview('') // No image available
+    }
       setRejectionComment(post.rejection_comment);
     }
   }, [post])
@@ -41,26 +50,42 @@ export default function ReviewPost() {
   const file = e.target.files[0];
   if (file) {
     setImage(file); 
+      setPreview(URL.createObjectURL(file))
   }
 };
 
 
-  const handleSave = async () => {
-    console.log(rejectionComment)
-    try {
-      if (user.role === 'reporter') {
-        await dispatch(updatePostContent({ id, data: { title, content, image } }));
-      }
+const handleSave = async () => {
+  try {
+    const formDataImage = preview === '' && image === null
+      ? null 
+      : image ?? undefined
 
-      if (user.role === 'editor') {
-        await dispatch(updatePostStatus({ id, data: { status, rejection_comment: rejectionComment } }));
-      }
-    dispatch(fetchPostById(post.id))
-      alert('Modifications enregistrées !');
-    } catch (err) {
-      alert("Erreur lors de la sauvegarde.");
+    if (user.role === 'reporter') {
+      await dispatch(updatePostContent({
+        id,
+        data: {
+          title,
+          content,
+          status,
+          image: formDataImage
+        }
+      }))
     }
-  };
+
+    if (user.role === 'editor') {
+      await dispatch(updatePostStatus({
+        id,
+        data: { status, rejection_comment: rejectionComment }
+      }))
+    }
+
+    dispatch(fetchPostById(post.id))
+    alert('Modifications enregistrées !')
+  } catch (err) {
+    alert("Erreur lors de la sauvegarde.")
+  }
+}
 
 
   if (loading) return <p>Chargement...</p>
@@ -78,12 +103,13 @@ export default function ReviewPost() {
     { value: '', label: 'Select status', disabled: true },
     ...(
       user.role === 'reporter'
-        ? allStatuses.filter(s => s.value === 'draft' || s.value === 'pending')
-        : allStatuses.filter(s => s.value !== 'draft')
+        ? allStatuses.filter(s => s.value === 'Draft' || s.value === 'Pending')
+        : allStatuses.filter(s => s.value !== 'Draft')
     ),
   ]
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
+    
       <div className="flex items-center justify-between p-4 border-b">
         <div>
           <span className="text-sm text-gray-500">
@@ -126,10 +152,13 @@ export default function ReviewPost() {
               alt={post.title}
               className="w-full h-full object-cover"
             />
-
+         
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <ImageUploader image={image} edit={true} onChange={handleFileChange} />
+              
+              <ImageUploader image={preview} edit={true} onChange={handleFileChange} />
+  
             </div>
+            
           </div>
 
           <div className="p-6">

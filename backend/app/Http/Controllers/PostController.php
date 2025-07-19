@@ -89,64 +89,60 @@ class PostController extends Controller
 
         return response()->json($post);
     }
-public function updateContent(Request $request, Post $post)
-{
-    try {
-        // Authentification du propriétaire
-        if ($post->user_id !== auth()->id()) {
-            return response()->json(['message' => 'Not authorized.'], 403);
-        }
+    public function updateContent(Request $request, Post $post)
+    {
+        try {
+            if ($post->user_id !== auth()->id()) {
+                return response()->json(['message' => 'Not authorized.'], 403);
+            }
 
-        // Validation de base, sans l'image
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'content' => 'sometimes|required|string',
-            'status' => 'sometimes|in:Draft,Pending,Approved,Rejected',
-            'categorie_id' => 'sometimes|exists:categories,id',
-        ]);
-
-        // Gérer le champ image
-        if ($request->hasFile('image')) {
-            // Valider et stocker le fichier
-            $request->validate([
-                'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
+            $validated = $request->validate([
+                'title' => 'sometimes|required|string|max:255',
+                'content' => 'sometimes|required|string',
+                'status' => 'sometimes|in:Draft,Pending',
+                'categorie_id' => 'sometimes|exists:categories,id',
             ]);
 
-            if ($post->image) {
-                \Storage::disk('public')->delete($post->image);
+            if ($request->hasFile('image')) {
+                $request->validate([
+                    'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
+                ]);
+
+                if ($post->image) {
+                    \Storage::disk('public')->delete($post->image);
+                }
+
+                $validated['image'] = $request->file('image')->store('images', 'public');
+
+            } elseif ($request->input('image') === 'null') {
+                // Demande explicite de suppression de l'image
+                if ($post->image) {
+                    \Storage::disk('public')->delete($post->image);
+                }
+                $validated['image'] = null;
             }
 
-            $validated['image'] = $request->file('image')->store('images', 'public');
+            // Mise à jour
+            $post->update($validated);
 
-        } elseif ($request->input('image') === 'null') {
-            // Demande explicite de suppression de l'image
-            if ($post->image) {
-                \Storage::disk('public')->delete($post->image);
-            }
-            $validated['image'] = null;
+            return response()->json([
+                'message' => 'Post updated successfully',
+                'post' => $post->fresh()
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating post',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Mise à jour
-        $post->update($validated);
-
-        return response()->json([
-            'message' => 'Post updated successfully',
-            'post' => $post->fresh()
-        ], 200);
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return response()->json([
-            'message' => 'Validation failed',
-            'errors' => $e->errors(),
-        ], 422);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Error updating post',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
     public function index(Request $request)
     {
@@ -154,26 +150,25 @@ public function updateContent(Request $request, Post $post)
             $user = auth()->user();
             $query = Post::query();
 
-            if ($user->role === 'reporter') {
-                // Reporter : uniquement ses propres posts (tous les statuts)
+            if ($user->role === 'editor') {
+                // Editor : posts dont le statut n'est pas draft
+                $query->where('status', '!=', 'draft');
+            } elseif ($user->role === 'reporter') {
+                // Reporter : uniquement ses propres posts
                 $query->where('user_id', $user->id);
             }
 
-            if ($user->role === 'editor') {
-                // Editor : tous les posts sauf ceux en draft
-                $query->where('status', '!=', 'draft');
-            }
-
-            // Filtres communs (peu importe le rôle)
-            if ($request->filled('author_id')) {
+            // Filtre optionnel par auteur (pour éditeur seulement si besoin)
+            if ($user->role === 'editor' && $request->filled('author_id')) {
                 $query->where('user_id', $request->author_id);
             }
 
+            // Filtre par catégorie si présent
             if ($request->filled('categorie_id')) {
                 $query->where('categorie_id', $request->categorie_id);
             }
 
-            // Filtrage de statut en plus (si demandé explicitement)
+            // Filtre par statut si présent
             if ($request->filled('status')) {
                 $query->where('status', $request->status);
             }
@@ -185,6 +180,8 @@ public function updateContent(Request $request, Post $post)
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+
 
 
 
