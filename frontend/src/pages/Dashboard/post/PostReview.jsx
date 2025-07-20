@@ -1,14 +1,18 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchPostById, deletePost } from '../../../store/posts/postsSlice'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import Dialog from '../../../components/Dialog'
 
 export default function ReviewPost() {
   const backendUrl = process.env.REACT_APP_API_BASE_URL_St
   const { id } = useParams()
   const dispatch = useDispatch()
   const { selected: post, loading, error } = useSelector((state) => state.posts)
+
+  const { user } = useSelector((state) => state.auth)
+  const [showDialog, setShowDialog] = useState(false)
 
   useEffect(() => {
     if (id) dispatch(fetchPostById(id))
@@ -20,14 +24,19 @@ export default function ReviewPost() {
     navigate(`/dashboard/posts/${id}/edit`)
   }
 
-const onDelete = async () => {
-  if (window.confirm("Voulez-vous vraiment supprimer cet article ?")) {
-    try {
-      await dispatch(deletePost(id)).unwrap()
-      navigate('/dashboard/posts')
-    } catch (err) {
-      alert("Erreur lors de la suppression : " + (err?.message || ''))
-    }
+
+const onDelete = () => {
+  setShowDialog(true)
+}
+
+const handleConfirmDelete = async () => {
+  try {
+    await dispatch(deletePost(id)).unwrap()
+    navigate('/dashboard/posts')
+  } catch (err) {
+    alert("Erreur lors de la suppression : " + (err?.message || ''))
+  } finally {
+    setShowDialog(false)
   }
 }
 
@@ -36,6 +45,13 @@ const onDelete = async () => {
   if (!post) return <p>Aucun article trouvé</p>
   return (
     <div  >
+      <Dialog
+  isOpen={showDialog}
+  onClose={() => setShowDialog(false)}
+  onConfirm={handleConfirmDelete}
+  title="Supprimer l’article"
+  message="Voulez-vous vraiment supprimer cet article ? Cette action est irréversible."
+/>
       {/* className="max-w-4xl mx-auto mt-4  shadow-md rounded-xl overflow-hidden" */}
       <div className="flex items-center justify-between p-4 border-b ">
         <div>
@@ -52,15 +68,16 @@ const onDelete = async () => {
           >
             <PencilSquareIcon className="h-5 w-5" />
           </button>
-          <button
+         {user.role === 'reporter' &&(<button
             onClick={onDelete}
             className="text-red-600 hover:text-red-800"
             title="Supprimer"
           >
             <TrashIcon className="h-5 w-5" />
-          </button>
+          </button>)}
         </div>
       </div>
+
 
      {post.image && (
   <div className="w-full h-[29rem] overflow-hidden rounded-md">
