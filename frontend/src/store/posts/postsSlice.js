@@ -27,27 +27,18 @@ export const fetchValidatedPostPublicById = createAsyncThunk(
   }
 );
 
-// 🧑‍💻 Reporter : voir ses propres posts avec filtres
+// 🧑‍💻 Reporter : voir ses propres posts
 export const fetchMyPosts = createAsyncThunk(
   "posts/my",
-  async (filters = {}, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      const params = new URLSearchParams();
-
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
-          params.append(key, value);
-        }
-      });
-
-      const res = await api.get(`/posts-reporter?${params.toString()}`);
+      const res = await api.get("/posts-reporter");
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || "Erreur serveur");
     }
   }
 );
-
 
 // 🧑‍🏫 Editor : voir tous les posts
 
@@ -58,7 +49,13 @@ export const fetchAllPosts = createAsyncThunk(
       const params = new URLSearchParams();
 
       Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
+        if (Array.isArray(value)) {
+          value.forEach((v) => {
+            if (v !== undefined && v !== null && v !== "") {
+              params.append(`${key}[]`, v); // ✅ Important for arrays
+            }
+          });
+        } else if (value !== undefined && value !== null && value !== "") {
           params.append(key, value);
         }
       });
@@ -70,6 +67,7 @@ export const fetchAllPosts = createAsyncThunk(
     }
   }
 );
+
 
 // 🔁 Tous : détails d’un post
 export const fetchPostById = createAsyncThunk(

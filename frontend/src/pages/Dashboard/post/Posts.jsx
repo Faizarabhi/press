@@ -56,7 +56,7 @@ const { filters } = useOutletContext()
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Liste des articles</h1>
+      
 
       {user.role !== 'editor' && (
         <button
