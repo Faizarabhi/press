@@ -42,7 +42,7 @@ const CategoriesManage = () => {
         />
         <button
           type="submit"
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded"
         >
           Ajouter
         </button>

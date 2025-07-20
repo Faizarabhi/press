@@ -41,7 +41,7 @@ export default function Public() {
                     <div className="mt-10 flex justify-center gap-x-6">
                         <a
                             href="/categories"
-                            className="rounded-md bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            className="rounded-md bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                         >
                             Explore Categories
                         </a>

@@ -20,11 +20,11 @@ export default function Article({ post,link }) {
     </div>
   )}
 
-  <div className="mt-3 flex items-center gap-x-4 text-xs">
+  <div className="mt-3 flex items-center justify-between gap-x-4 text-xs">
     <time dateTime={post?.created_at} className="text-gray-500">
       {new Date(post?.created_at).toLocaleDateString()}
     </time>
-    <span className="rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">
+    <span className="rounded-full bg-gray-200 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">
       {post?.category?.name}
     </span>
   </div>
@@ -58,8 +58,8 @@ export default function Article({ post,link }) {
       </div>
     )}
 
-    <div className="flex flex-col items-end text-right">
-      <span className="text-gray-500 mb-1">{post?.status}</span>
+    <div className="flex justify-between items-center  w-full">
+      <p className="text-gray-500 mb-1">{post?.status}</p>
       <Link
         to={link}
         className="text-indigo-600 hover:underline text-sm"

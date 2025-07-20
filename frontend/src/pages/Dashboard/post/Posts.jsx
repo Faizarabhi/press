@@ -38,18 +38,21 @@ const { filters } = useOutletContext()
   if (error) return <p className="text-red-500">{error?.message || 'Erreur serveur'}</p>
   if (!posts.length) {
     return (
-      <div className="text-gray-500">
+      <div className="text-gray-500 ">
         {user.role !== 'editor' && (
-          <button
-            onClick={() => navigate('/dashboard/posts/create')}
-            type="button"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            <PlusIcon className="w-5 h-5" />
-            Enregistrer
-          </button>
+            <div className='flex justify-end'>
+        <button
+          onClick={() => navigate('/dashboard/posts/create')}
+          type="button"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        >
+          <PlusIcon className="w-5 h-5" />
+          créer un article
+        </button>
+        </div>
         )}
-        <p>Aucun article trouvé.</p>
+        <div className='flex flex-col items-center justify-center mt-32'><p>Aucun article trouvé.</p></div>
+        
       </div>
     )
   }
@@ -59,14 +62,16 @@ const { filters } = useOutletContext()
       
 
       {user.role !== 'editor' && (
+        <div className='flex justify-end'>
         <button
           onClick={() => navigate('/dashboard/posts/create')}
           type="button"
           className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
         >
           <PlusIcon className="w-5 h-5" />
-          Enregistrer
+          créer un article
         </button>
+        </div>
       )}
 
       <ul className="flex justify-center flex-wrap gap-4">

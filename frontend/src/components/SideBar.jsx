@@ -23,7 +23,7 @@ export default function Sidebar() {
   };
 
   const menuItems = [
-    { to: '/dashboard', icon: Home, label: 'Dashboard', roles: ['reporter', 'editor'] },
+    { to: '/', icon: Home, label: 'Dashboard', roles: ['reporter', 'editor'] },
     { to: '/dashboard/categories', icon: ClipboardList, label: 'Categories', roles: ['editor'] },
     { to: '/dashboard/posts', icon: Calendar, label: 'Posts', roles: ['reporter', 'editor'] },
     { to: '/dashboard/analytics', icon: BarChart2, label: 'Analytics', roles: ['editor'] },
@@ -37,12 +37,12 @@ export default function Sidebar() {
 
   const linkClass = ({ isActive }) =>
     `flex items-center px-2 py-1 rounded-md transition-colors duration-200 ${
-      isActive ? 'text-green-700 font-semibold' : 'text-gray-600 hover:text-green-600'
+      isActive ? 'text-orange-500 font-semibold' : 'text-gray-600 hover:text-orange-600'
     }`;
 
   return (
     <aside className="bg-white shadow-lg h-screen p-6 fixed left-0 top-0 z-20 w-1/5">
-      <div className="text-2xl font-bold text-green-600 mb-8">Donezo</div>
+      <div className="text-2xl font-bold text-orange-600 mb-8"><img src="/logopress.png" className="h-8 me-3" alt="e Logo" /></div>
 
       <div className="space-y-8">
         <div>

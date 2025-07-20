@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCategories } from '../store/category/categorySlice'
 import { fetchAuthors } from '../store/user/userSlice'
-import { FunnelIcon } from '@heroicons/react/24/outline'
+import { AdjustmentsVerticalIcon, FunnelIcon } from '@heroicons/react/24/outline'
 
 export default function Filter({ onChange }) {
     const dispatch = useDispatch()
@@ -95,14 +95,14 @@ export default function Filter({ onChange }) {
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="inline-flex justify-center items-center rounded-md border border-transparent bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
+                className="inline-flex justify-center items-center rounded-md border  px-4 py-2 text-sm font-medium text-gray-400 hover hover:bg-gray-500"
             >
                 Filter
-                <FunnelIcon className="ml-2 h-4 w-4" aria-hidden="true" />
+                <AdjustmentsVerticalIcon className="ml-2 h-4 w-4" aria-hidden="true" />
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-72 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10 max-h-[32rem] overflow-y-auto p-4 space-y-4">
+                <div className="absolute  mt-2 w-72 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10 max-h-[32rem] overflow-y-auto p-4 space-y-4">
 
                     {/* Authors - Only for editors */}
                     {user?.role === 'editor' && (
@@ -152,7 +152,7 @@ export default function Filter({ onChange }) {
                                         type="checkbox"
                                         checked={checked}
                                         onChange={() => toggleCategory(id)}
-                                        className="h-4 w-4 text-blue-600"
+                                        className="h-4 w-4 text-gray-600"
                                     />
                                     <label htmlFor={`cat-${id}`} className="ml-2">
                                         {name}
@@ -173,7 +173,7 @@ export default function Filter({ onChange }) {
                                         type="checkbox"
                                         checked={statusState.includes(status)}
                                         onChange={() => toggleStatus(status)}
-                                        className="h-4 w-4 text-green-600"
+                                        className="h-4 w-4 text-orange-600"
                                     />
                                     <label htmlFor={`status-${status}`} className="ml-2 capitalize">
                                         {status}

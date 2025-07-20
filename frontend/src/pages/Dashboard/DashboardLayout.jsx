@@ -39,7 +39,7 @@ export default function DashboardLayout() {
           <h1 className="text-2xl font-bold mb-4">Liste des articles</h1>
         
           {location.pathname === "/dashboard/posts" && (
-            <div className="grid grid-cols-3 gap-4 w-screen">
+            <div>
               <Filter onChange={setFilters} />
             </div>
           )}
