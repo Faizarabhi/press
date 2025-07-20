@@ -9,25 +9,30 @@ export default function Posts() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { categoryFilter } = useOutletContext() // 👈 access filter
+const { filters } = useOutletContext()
+
   const { items: posts, loading, error } = useSelector((state) => state.posts)
   const { user } = useSelector((state) => state.auth)
 
-  useEffect(() => {
-    if (!user) return
+ useEffect(() => {
+  if (!user) return
 
-    // Prepare filter object
-    const filters = {}
-    if (categoryFilter?.length > 0) {
-      filters.categorie_id = categoryFilter.join(',') // assuming your backend can handle multiple
-    }
+  const query = {}
 
-    if (user.role === 'editor') {
-      dispatch(fetchAllPosts(filters))
-    } else if (user.role === 'reporter') {
-      dispatch(fetchMyPosts(filters)) // optional: extend fetchMyPosts to accept filters
-    }
-  }, [dispatch, user, categoryFilter])
+  if (filters?.categories?.length > 0) {
+    query.categorie_id = filters.categories.join(',')
+  }
+
+  if (filters?.status?.length > 0) {
+    query.status = filters.status.join(',')
+  }
+
+  if (user.role === 'editor') {
+    dispatch(fetchAllPosts(query))
+  } else if (user.role === 'reporter') {
+    dispatch(fetchMyPosts(query))
+  }
+}, [dispatch, user, filters])
 
   if (loading) return <p className="text-gray-500">Chargement...</p>
   if (error) return <p className="text-red-500">{error?.message || 'Erreur serveur'}</p>
