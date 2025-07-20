@@ -30,15 +30,32 @@ export const fetchValidatedPostPublicById = createAsyncThunk(
 // 🧑‍💻 Reporter : voir ses propres posts
 export const fetchMyPosts = createAsyncThunk(
   "posts/my",
-  async (_, thunkAPI) => {
+  async (filters = {}, thunkAPI) => {
     try {
-      const res = await api.get("/posts-reporter");
+      const params = new URLSearchParams();
+
+      Object.entries(filters).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((v) => {
+            if (v !== undefined && v !== null && v !== "") {
+              params.append(`${key}[]`, v);
+            }
+          });
+        } else if (value !== undefined && value !== null && value !== "") {
+          params.append(key, value);
+        }
+      });
+
+      const res = await api.get(`/posts-reporter?${params.toString()}`);
       return res.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data || "Erreur serveur");
+      return thunkAPI.rejectWithValue(
+        err.response?.data || "Erreur serveur"
+      );
     }
   }
 );
+
 
 // 🧑‍🏫 Editor : voir tous les posts
 

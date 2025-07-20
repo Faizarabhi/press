@@ -23,10 +23,11 @@ export default function Filter({ onChange }) {
         : ['draft', 'pending']
 
     useEffect(() => {
-        dispatch(fetchCategories())
-        dispatch(fetchAuthors())
-    }, [dispatch])
-
+        dispatch(fetchCategories());
+        if (user.role === 'editor') {
+            dispatch(fetchAuthors());
+        }
+    }, [dispatch, user.role]);
     useEffect(() => {
         setCategoryState(categories.map(cat => ({
             id: cat.id,
@@ -78,12 +79,13 @@ export default function Filter({ onChange }) {
             onChange({
                 categorie_id: categories.filter(c => c.checked).map(c => c.id),
                 status: statusList,
-                author_id: authorId ? [authorId] : [],
+                author_id: user?.role === 'editor' && authorId ? [authorId] : [],
                 start_date: start,
                 end_date: end
             });
         }
     };
+
 
     if (loadingCategories || loadingAuthors) return <p>Chargement...</p>
     if (error) return <p className="text-red-500">Erreur : {error}</p>
@@ -102,22 +104,25 @@ export default function Filter({ onChange }) {
             {open && (
                 <div className="absolute right-0 mt-2 w-72 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10 max-h-[32rem] overflow-y-auto p-4 space-y-4">
 
-                    {/* Authors */}
-                    <div>
-                        <label className="text-sm font-semibold text-gray-900">Author</label>
-                        <select
-                            value={selectedAuthor}
-                            onChange={handleAuthorChange}
-                            className="mt-1 w-full border rounded px-2 py-1 text-sm"
-                        >
-                            <option value="">All</option>
-                            {authors.map(author => (
-                                <option key={author.id} value={author.id}>
-                                    {author.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Authors - Only for editors */}
+                    {user?.role === 'editor' && (
+                        <div>
+                            <label className="text-sm font-semibold text-gray-900">Author</label>
+                            <select
+                                value={selectedAuthor}
+                                onChange={handleAuthorChange}
+                                className="mt-1 w-full border rounded px-2 py-1 text-sm"
+                            >
+                                <option value="">All</option>
+                                {authors.map(author => (
+                                    <option key={author.id} value={author.id}>
+                                        {author.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
 
                     {/* Dates */}
                     <div className="space-y-2">
