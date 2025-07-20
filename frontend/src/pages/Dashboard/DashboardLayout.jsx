@@ -1,47 +1,33 @@
-import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Outlet, Link } from 'react-router-dom'
-import { logout } from '../../store/auth/authSlice'
-import Filter from '../../components/Filter'
+import { Outlet } from "react-router-dom";
+import Navbarr from "../../components/NavBarr";
+import Sidebar from "../../components/SideBar";
+import { useState } from "react";
+import Navbar from "../../components/Navbar";
+import { useSelector } from "react-redux";
 
-export default function DashboardLayout() {
-  const dispatch = useDispatch()
+
+export default function Dashboard() {
+
   const { user } = useSelector((state) => state.auth)
 
-  const [categoryFilter, setCategoryFilter] = useState([])
-
-  const handleLogout = () => {
-    dispatch(logout())
-    window.location.href = '/'
-  }
-
+  const [categoryFilter, setCategoryFilter] = useState([]);
   return (
-    <div className="min-h-screen flex">
-      <aside className="w-64 bg-gray-800 text-white p-4 space-y-2 fixed min-h-full">
-        <h2 className="text-xl font-semibold">Dashboard</h2>
-        <nav className="mt-4 flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Link to="/dashboard/posts" className="hover:text-indigo-400">Articles</Link>
-            {user.role === 'editor' &&
-              <Link to="/dashboard/categories" className="hover:text-indigo-400">Categories</Link>}
+    <div className="flex">
+      <Sidebar />
+      <Navbar user={user} />
+
+      <div className="bg-gray-50 w-4/5 absolute right-0 top-16 overflow-x-hidden px-12 ">
+        <main className="p-6 ">
+          <h1 className="text-2xl font-bold mb-4 ">Dashboard</h1>
+          <div className="grid grid-cols-3 gap-4 w-screen">
+            <div className="bg-white p-6 rounded-xl shadow">Posts</div>
+
           </div>
-
-          {/* ⬇️ Filter component gets category filter callback */}
-          <Filter onChange={(selectedCats) => setCategoryFilter(selectedCats)} />
-
-          <button
-            onClick={handleLogout}
-            className="text-sm font-semibold text-gray-200 hover:text-orange-600 transition"
-          >
-            Logout <span aria-hidden="true">&rarr;</span>
-          </button>
-        </nav>
-      </aside>
-
-      <main className="ml-[20rem] p-6 w-full">
-        {/* ⬇️ Outlet passes filter to children */}
-        <Outlet context={{ categoryFilter }} />
-      </main>
+          <div className="mt-6">
+            <Outlet context={{ categoryFilter }} />
+          </div>
+        </main>
+      </div>
     </div>
   )
 }

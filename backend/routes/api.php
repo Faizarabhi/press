@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -38,7 +39,7 @@ Route::middleware(['auth.jwt', 'role:reporter'])->group(function () {
 Route::middleware(['auth.jwt', 'role:editor'])->group(function () {
     Route::put('/posts/{post}/update-status', [PostController::class, 'updateStatus']);
     Route::get('/posts', [PostController::class, 'index']);
-
+    Route::get('/authors', [UserController::class, 'getReporters']);
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{id}', [CategoryController::class, 'update']);

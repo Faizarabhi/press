@@ -35,7 +35,8 @@ const onDelete = async () => {
   if (error) return <p className="text-red-600">{error.message || 'Erreur'}</p>
   if (!post) return <p>Aucun article trouvé</p>
   return (
-    <div className="max-w-4xl mx-auto mt-4  shadow-md rounded-xl overflow-hidden">
+    <div  >
+      {/* className="max-w-4xl mx-auto mt-4  shadow-md rounded-xl overflow-hidden" */}
       <div className="flex items-center justify-between p-4 border-b ">
         <div>
           <span className="text-sm text-gray-500">

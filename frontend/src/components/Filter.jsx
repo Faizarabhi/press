@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCategories } from '../store/category/categorySlice' // corrige selon ton chemin exact
+import { FunnelIcon } from '@heroicons/react/24/outline'
 
 export default function Filter({ onChange }) {
   const dispatch = useDispatch()
@@ -61,20 +62,12 @@ export default function Filter({ onChange }) {
         aria-haspopup="true"
       >
         Filter by category
-        <svg
-          className="ml-2 h-4 w-4"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
+       <FunnelIcon className="ml-2 h-4 w-4" aria-hidden="true" />
+
       </button>
 
       {open && (
+        <>
         <div className="absolute right-0 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 max-h-64 overflow-y-auto">
           <h6 className="px-4 py-2 text-sm font-semibold text-gray-900 border-b">Category</h6>
           <ul className="p-3 space-y-2 text-sm text-gray-700 max-h-48 overflow-y-auto">
@@ -94,6 +87,7 @@ export default function Filter({ onChange }) {
             ))}
           </ul>
         </div>
+        </>
       )}
     </div>
   )
