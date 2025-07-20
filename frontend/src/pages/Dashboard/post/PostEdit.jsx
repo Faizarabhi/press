@@ -107,6 +107,7 @@ const handleSave = async () => {
         : allStatuses.filter(s => s.value !== 'Draft')
     ),
   ]
+  
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
     
@@ -129,7 +130,7 @@ const handleSave = async () => {
           <button
             onClick={handleSave}
             type="button"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-md hover:bg-orange-700"
           >
             <CheckIcon className="w-5 h-5" />
             Enregistrer

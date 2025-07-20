@@ -1,3 +1,5 @@
+import StatusBadge from "./StatusBadge"
+
 export default function ArticleCard({ post }) {
   
   const backendUrl = process.env.REACT_APP_API_BASE_URL_St
@@ -9,7 +11,7 @@ export default function ArticleCard({ post }) {
         <h3 className="text-lg font-bold">{post.title}</h3>
         <p className="text-sm text-gray-600 line-clamp-3">{post.content}</p>
         <div className="text-xs text-gray-500">
-          {new Date(post.created_at).toLocaleDateString()} — {post.status} — {post.category.name}
+          {new Date(post.created_at).toLocaleDateString()} — <StatusBadge status={post.status}/> — {post.category.name}
         </div>
         <a href={`/dashboard/posts/${post.id}`} className="text-indigo-600 text-sm font-medium">
           Voir plus →

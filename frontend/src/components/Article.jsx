@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useSelector } from 'react-redux'
+import StatusBadge from "./StatusBadge";
 
 
 export default function Article({ post,link }) {
@@ -59,7 +60,7 @@ export default function Article({ post,link }) {
     )}
 
     <div className="flex justify-between items-center  w-full">
-      <p className="text-gray-500 mb-1">{post?.status}</p>
+      <StatusBadge status={post?.status}/>
       <Link
         to={link}
         className="text-indigo-600 hover:underline text-sm"

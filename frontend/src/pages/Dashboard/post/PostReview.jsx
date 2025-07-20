@@ -84,7 +84,7 @@ const handleConfirmDelete = async () => {
   <img
     src={`${backendUrl}/storage/${post.image}`} 
     alt={post.title}
-    className="w-full h-full object-cover"
+    className="w-full h-full object-cover  transition-transform duration-300 hover:scale-105"
   />
 </div>
 

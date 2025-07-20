@@ -101,7 +101,7 @@ const PostCreate = () => {
       <div>
         {previewUrl ? (
           <div className="relative inline-block object-cover">
-            <img src={previewUrl} alt="Preview" className="rounded border" />
+            <img src={previewUrl} alt="Preview" className="rounded border  transition-transform duration-300 hover:scale-105" />
             <button
               type="button"
               onClick={handleRemove}
@@ -140,12 +140,12 @@ const PostCreate = () => {
     onChange={() => setStatus(status === 'pending' ? 'draft' : 'pending')}
   />
   
-  <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 relative after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:peer-checked:bg-blue-600"></div>
+  <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-orange-600 relative after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:peer-checked:bg-orange-600"></div>
 
   <span
     className={`ms-3 text-sm font-medium ${
       status === 'pending'
-        ? 'text-blue-600'
+        ? 'text-orange-600'
         : 'text-gray-400 dark:text-gray-500'
     }`}
   >
@@ -160,7 +160,7 @@ const PostCreate = () => {
 
       <button
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
+        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 mb-4 rounded disabled:opacity-50"
         disabled={loading}
       >
         {loading ? 'Création en cours...' : 'Créer'}

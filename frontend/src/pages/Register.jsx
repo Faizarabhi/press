@@ -113,7 +113,7 @@ export default function Register() {
 
         <p className="mt-4 text-sm text-gray-600">
           J'ai déjà un compte,&nbsp;
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-orange-600 hover:underline">
             connectez-vous ici
           </Link>
           .

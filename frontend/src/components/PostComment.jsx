@@ -22,7 +22,7 @@ export default function TextArea({content = '', onChange}) {
         <div className="flex items-center justify-between px-3 py-2 border-t border-gray-200 ">
           <button
             type="submit"
-            className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 "
+            className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-white bg-orange-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 "
           >
             Post comment
           </button>

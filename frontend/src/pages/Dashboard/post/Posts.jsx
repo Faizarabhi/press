@@ -44,7 +44,7 @@ const { filters } = useOutletContext()
         <button
           onClick={() => navigate('/dashboard/posts/create')}
           type="button"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-md hover:bg-orange-700"
         >
           <PlusIcon className="w-5 h-5" />
           créer un article
@@ -66,7 +66,7 @@ const { filters } = useOutletContext()
         <button
           onClick={() => navigate('/dashboard/posts/create')}
           type="button"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-md hover:bg-orange-700"
         >
           <PlusIcon className="w-5 h-5" />
           créer un article
@@ -74,9 +74,9 @@ const { filters } = useOutletContext()
         </div>
       )}
 
-      <ul className="flex justify-center flex-wrap gap-4">
+      <ul className="flex justify-center flex-wrap gap-4 mt-8">
         {posts?.map((post) => (
-          <li key={post.id} className="w-64 h-auto overflow-hidden rounded-xl shadow bg-white">
+          <li key={post.id} className="max-w-80 h-auto overflow-hidden rounded-xl shadow bg-white">
             <Article post={post} link={`/dashboard/posts/${post.id}`} />
           </li>
         ))}
