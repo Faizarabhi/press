@@ -1,8 +1,16 @@
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-
-const Navbar = ({ user, onLogout }) => {
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../store/auth/authSlice'; 
+const Navbar = ({ user }) => {
+     const dispatch = useDispatch();
+  const navigate = useNavigate();
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/login');
+      };
   return (
     <nav className="bg-white fixed right-0 z-50 w-4/5 border-b shadow px-6 py-4 flex items-center justify-end ">
 
@@ -44,7 +52,7 @@ const Navbar = ({ user, onLogout }) => {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={onLogout}
+                    onClick={handleLogout}
                     className={`${
                       active ? 'bg-gray-100' : ''
                     } w-full text-left px-4 py-2 text-sm text-red-600`}

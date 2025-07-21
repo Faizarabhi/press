@@ -9,7 +9,7 @@ export default function Article({ post,link }) {
 
   
   return (
-   <article className="flex flex-col justify-between h-full p-4 rounded-lg bg-white shadow">
+   <article className="flex flex-col justify-between h-full min-w-60 max-w-60 p-4 rounded-lg bg-white shadow-lg ">
   
   {post?.image && (
     <div className="w-full h-48">

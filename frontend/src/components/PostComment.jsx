@@ -20,12 +20,12 @@ export default function TextArea({content = '', onChange}) {
           </textarea>
         </div>
         <div className="flex items-center justify-between px-3 py-2 border-t border-gray-200 ">
-          <button
+       {/*    <button
             type="submit"
             className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-white bg-orange-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 "
           >
             Post comment
-          </button>
+          </button> */}
           <div className="flex space-x-1 rtl:space-x-reverse">
             <button
               type="button"

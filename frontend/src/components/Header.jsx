@@ -45,12 +45,19 @@ function Header() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           {!user ? (
-            <a
-              href="/login"
-              className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition"
-            >
-              Login <span aria-hidden="true">&rarr;</span>
-            </a>
+            <> <a
+                href="/login"
+                className="block rounded-full  px-3 py-2 mt-6 text-base font-semibold text-gray-900 hover:bg-gray-100"
+              >
+                Login
+              </a>
+               <a
+                href="/register"
+                className="block  ml-2 px-3 py-2 mt-6 text-base font-semibold text-white rounded-full  bg-gray-900 hover:bg-gray-100 hover:text-gray-900"
+              >
+                Register
+              </a>
+              </>
           ) : (
             <button
               onClick={handleLogout}
@@ -91,12 +98,19 @@ function Header() {
             ))}
 
             {!user ? (
-              <a
+             <> <a
                 href="/login"
-                className="block rounded-lg px-3 py-2 mt-6 text-base font-semibold text-gray-900 hover:bg-gray-100"
+                className="block rounded-full px-3 py-2 mt-6 text-base font-semibold text-gray-900 hover:bg-gray-100"
               >
                 Login
               </a>
+               <a
+                href="/register"
+                className="block px-3 py-2 mt-6 text-base font-semibold text-white rounded-full  bg-gray-900 hover:bg-gray-100"
+              >
+                Register
+              </a>
+              </>
             ) : (
               <button
                 onClick={() => {

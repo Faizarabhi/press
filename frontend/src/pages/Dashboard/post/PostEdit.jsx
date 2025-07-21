@@ -8,6 +8,7 @@ import Select from '../../../components/Select'
 import ImageUploader from '../../../components/ImageUploader'
 import PostComment from '../../../components/PostComment'
 import { MessageRejected } from '../../../components/MessageRejected'
+import Alert from '../../../components/Alert'
 
 export default function ReviewPost() {
   const { id } = useParams()
@@ -55,37 +56,37 @@ const [preview, setPreview] = useState('')
 };
 
 
+
+const [successMsg, setSuccessMsg] = useState('');
+const [errorMsg, setErrorMsg] = useState('');
+
 const handleSave = async () => {
   try {
-    const formDataImage = preview === '' && image === null
-      ? null 
-      : image ?? undefined
+    const formDataImage =
+      preview === '' && image === null ? null : image ?? undefined;
 
     if (user.role === 'reporter') {
       await dispatch(updatePostContent({
         id,
-        data: {
-          title,
-          content,
-          status,
-          image: formDataImage
-        }
-      }))
+        data: { title, content, status, image: formDataImage },
+      })).unwrap(); 
     }
 
     if (user.role === 'editor') {
       await dispatch(updatePostStatus({
         id,
-        data: { status, rejection_comment: rejectionComment }
-      }))
+        data: { status, rejection_comment: rejectionComment },
+      })).unwrap();
     }
 
-    dispatch(fetchPostById(post.id))
-    alert('Modifications enregistrées !')
+    await dispatch(fetchPostById(post.id));
+
+    setSuccessMsg(' Modifications enregistrées avec succès !');
   } catch (err) {
-    alert("Erreur lors de la sauvegarde.")
+    console.error(err);
+    setErrorMsg(" Une erreur est survenue lors de la sauvegarde.");
   }
-}
+};
 
 
   if (loading) return <p>Chargement...</p>
@@ -143,7 +144,7 @@ const handleSave = async () => {
           <MessageRejected title={post.rejection_comment} />
         )}
       </div>
-      <span className="text-sm">{status === 'Rejected' ? <TextArea content={rejectionComment} onChange={(e) => setRejectionComment(e.target.value)} />
+      <span className="text-sm">{status === 'Rejected' ? <PostComment content={rejectionComment} onChange={(e) => setRejectionComment(e.target.value)} />
         : ''}</span>
       {user.role === 'reporter' ? (
         <>
@@ -191,6 +192,10 @@ const handleSave = async () => {
           </p>
         </div>
       </>)}
+
+      {successMsg && <Alert status="success" content={successMsg} />}
+{errorMsg && <Alert status="error" content={errorMsg} />}
+
     </div>
   )
 }

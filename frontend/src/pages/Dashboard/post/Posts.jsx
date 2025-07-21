@@ -35,7 +35,14 @@ const { filters } = useOutletContext()
 }, [dispatch, user, filters])
 
   if (loading) return <p className="text-gray-500">Chargement...</p>
-  if (error) return <p className="text-red-500">{error?.message || 'Erreur serveur'}</p>
+  if (error) {
+  const msg = typeof error === 'string'
+    ? error
+    : error?.message || 'Une erreur est survenue'
+
+  return <p className="text-red-500">{msg}</p>
+}
+
   if (!posts.length) {
     return (
       <div className="text-gray-500 ">
