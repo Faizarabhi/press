@@ -5,7 +5,7 @@ export function MessageRejected({ title }) {
   return (
     <div
       role="alert"
-      className="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 "
+      className="flex p-4 mb-4 text-sm text-red-800 rounded-lg m-4 bg-red-50 "
     >
       <ExclamationTriangleIcon
         className="shrink-0 inline w-5 h-5 mr-3 mt-[2px]"

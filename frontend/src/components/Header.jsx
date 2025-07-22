@@ -63,7 +63,7 @@ function Header() {
               onClick={handleLogout}
               className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition"
             >
-              Logout <span aria-hidden="true">&rarr;</span>
+              Déconnexion <span aria-hidden="true">&rarr;</span>
             </button>
           )}
         </div>
@@ -119,7 +119,7 @@ function Header() {
                 }}
                 className="block rounded-lg px-3 py-2 mt-6 text-base font-semibold text-gray-900 hover:bg-gray-100"
               >
-                Logout
+                Déconnexion
               </button>
             )}
           </div>

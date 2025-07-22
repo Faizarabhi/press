@@ -79,7 +79,7 @@ export default function Sidebar() {
                 className="flex items-center px-2 py-1 text-gray-600 hover:text-red-600 transition-colors duration-200"
               >
                 <LogOut className="w-5 h-5 mr-3" />
-                Logout
+                Déconnexion
               </button>
             </li>
           </ul>

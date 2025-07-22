@@ -83,7 +83,7 @@ const { filters } = useOutletContext()
 
       <ul className="flex justify-center flex-wrap gap-4 mt-8">
         {posts?.map((post) => (
-          <li key={post.id} className="max-w-80 h-auto overflow-hidden rounded-xl shadow bg-white">
+          <li key={post.id} className="h-auto overflow-hidden rounded-xl shadow bg-white">
             <Article post={post} link={`/dashboard/posts/${post.id}`} />
           </li>
         ))}

@@ -138,7 +138,7 @@ const PostCreate = () => {
         <div>
           <label className="block font-medium mb-1">Contenu</label>
           <textarea
-            className="w-full border px-3 py-2 rounded "
+          className="w-full  min-h-60 border px-3 py-2 rounded"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required

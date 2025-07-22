@@ -144,7 +144,7 @@ export default function Public() {
                 ) : error ? (
                     <p className="text-center text-red-500">{error}</p>
                 ) : (
-                    <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-10 sm:grid-cols-3 lg:grid-cols-4">
                         {posts.map((post) => (
                             <Article key={post.id} post={post} link={`post-review/${post.id}`} />
                         ))}

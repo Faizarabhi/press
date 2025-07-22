@@ -98,7 +98,7 @@ export default function Register() {
             className="w-full border p-2 rounded"
             required
           >
-            <option value="reporter">Reporter</option>
+            <option value="reporter">Rapporteur</option>
             <option value="editor">Éditeur</option>
           </select>
 

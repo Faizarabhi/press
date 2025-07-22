@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { fetchValidatedPostPublicById } from '../store/posts/postsSlice'
 import { CalendarDaysIcon, UserIcon } from '@heroicons/react/24/outline'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 export default function ReviewPost() {
   const backendUrl = process.env.REACT_APP_API_BASE_URL_St
@@ -36,7 +38,10 @@ export default function ReviewPost() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-8 bg-white shadow-md rounded-xl overflow-hidden">
+    <>
+    <Header />
+    <div className="max-w-4xl mx-auto  bg-white shadow-md rounded-xl relative isolate overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-32">
+        
       <div className="p-6 border-b border-gray-100 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4 text-sm text-gray-600">
           <UserIcon className="w-5 h-5 text-gray-400" />
@@ -68,5 +73,7 @@ export default function ReviewPost() {
         </p>
       </div>
     </div>
+    <Footer/>
+    </>
   )
 }

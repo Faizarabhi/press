@@ -144,91 +144,91 @@ class PostController extends Controller
         }
     }
 
-  /*   public function index(Request $request)
+    /*   public function index(Request $request)
+      {
+          try {
+              $user = auth()->user();
+              $query = Post::query();
+
+              if ($user->role === 'editor') {
+                  $query->where('status', '!=', 'draft');
+              } elseif ($user->role === 'reporter') {
+                  $query->where('user_id', $user->id);
+              }
+
+              if ($user->role === 'editor' && $request->filled('author_id')) {
+                  $query->where('user_id', $request->author_id);
+              }
+
+              if ($request->filled('categorie_id')) {
+                  $query->where('categorie_id', $request->categorie_id);
+              }
+
+              if ($request->filled('status')) {
+                  $query->where('status', $request->status);
+              }
+
+              return response()->json(
+                  $query->with('author', 'category')->latest()->get()
+              );
+          } catch (\Exception $e) {
+              return response()->json(['message' => $e->getMessage()], 500);
+          }
+      } */
+
+
+    public function index(Request $request)
     {
         try {
             $user = auth()->user();
             $query = Post::query();
 
-            if ($user->role === 'editor') {
+            // Accès selon le rôle
+            if ($user->role === 'editor' && !$request->filled('status')) {
                 $query->where('status', '!=', 'draft');
             } elseif ($user->role === 'reporter') {
                 $query->where('user_id', $user->id);
             }
 
+            // Filtrage multiple : auteur
             if ($user->role === 'editor' && $request->filled('author_id')) {
-                $query->where('user_id', $request->author_id);
+                $authorIds = is_array($request->author_id) ? $request->author_id : [$request->author_id];
+                $query->whereIn('user_id', $authorIds);
             }
 
+            // Filtrage multiple : catégorie
             if ($request->filled('categorie_id')) {
-                $query->where('categorie_id', $request->categorie_id);
+                $categorieIds = is_array($request->categorie_id) ? $request->categorie_id : [$request->categorie_id];
+                $query->whereIn('categorie_id', $categorieIds);
             }
 
+            // Filtrage multiple : statut
             if ($request->filled('status')) {
-                $query->where('status', $request->status);
+                $statuses = is_array($request->status) ? $request->status : [$request->status];
+                $query->whereIn('status', $statuses);
             }
 
-            return response()->json(
-                $query->with('author', 'category')->latest()->get()
-            );
+            // Filtrage par date de création
+            if ($request->filled('start_date')) {
+                $query->whereDate('created_at', '>=', $request->start_date);
+            }
+
+            if ($request->filled('end_date')) {
+                $query->whereDate('created_at', '<=', $request->end_date);
+            }
+
+            $posts = $query
+                ->with(['author', 'category'])
+                ->latest()
+                ->get();
+
+            return response()->json($posts);
+
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            \Log::error('Post index error', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Erreur serveur.'], 500);
         }
-    } */
-
-
-public function index(Request $request)
-{
-    try {
-        $user = auth()->user();
-        $query = Post::query();
-
-        // Accès selon le rôle
-        if ($user->role === 'editor') {
-            $query->where('status', '!=', 'draft');
-        } elseif ($user->role === 'reporter') {
-            $query->where('user_id', $user->id);
-        }
-
-        // Filtrage multiple : auteur
-        if ($user->role === 'editor' && $request->filled('author_id')) {
-            $authorIds = is_array($request->author_id) ? $request->author_id : [$request->author_id];
-            $query->whereIn('user_id', $authorIds);
-        }
-
-        // Filtrage multiple : catégorie
-        if ($request->filled('categorie_id')) {
-            $categorieIds = is_array($request->categorie_id) ? $request->categorie_id : [$request->categorie_id];
-            $query->whereIn('categorie_id', $categorieIds);
-        }
-
-        // Filtrage multiple : statut
-        if ($request->filled('status')) {
-            $statuses = is_array($request->status) ? $request->status : [$request->status];
-            $query->whereIn('status', $statuses);
-        }
-
-        // Filtrage par date de création
-        if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
-
-        if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
-
-        $posts = $query
-            ->with(['author', 'category'])
-            ->latest()
-            ->get();
-
-        return response()->json($posts);
-
-    } catch (\Exception $e) {
-        \Log::error('Post index error', ['error' => $e->getMessage()]);
-        return response()->json(['message' => 'Erreur serveur.'], 500);
     }
-}
 
 
 

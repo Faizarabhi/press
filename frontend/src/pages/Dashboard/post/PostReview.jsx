@@ -52,7 +52,6 @@ const handleConfirmDelete = async () => {
   title="Supprimer l’article"
   message="Voulez-vous vraiment supprimer cet article ? Cette action est irréversible."
 />
-      {/* className="max-w-4xl mx-auto mt-4  shadow-md rounded-xl overflow-hidden" */}
       <div className="flex items-center justify-between p-4 border-b ">
         <div>
           <span className="text-sm text-gray-500">
